@@ -1,3 +1,6 @@
+import { connection, createConnection } from "./db";
+import { createHash } from "crypto"
+
 interface Categoria {
     id: number;
     nombre: string;
@@ -37,7 +40,7 @@ interface Usuario {
     rol: Rol;
 }
 
-    /** Ente a quién el departamento de redes le presta servicio */
+/** Ente a quién el departamento de redes le presta servicio */
 interface Cliente {
     id: number;
     nombre: string;
@@ -93,7 +96,7 @@ const AJUSTE_INVENTARIO_TIPO = {
     "ENTRADA": 1,
     "SALIDA": 2,
 } as const
-type AjusteInventarioTipoEnum = (typeof MOVIMIENTO_INVENTARIO_TIPO)
+type AjusteInventarioTipoEnum = (typeof AJUSTE_INVENTARIO_TIPO)
 type AjusteInventarioTipo = AjusteInventarioTipoEnum[keyof AjusteInventarioTipoEnum]
 
 interface AjusteInventario {
@@ -124,4 +127,27 @@ interface MovimientoInventario {
     cantidad: number;
     almacenOrigenId: number;
     almacenDestinoId: number | null; // Sólo se usaría para las transferencias ?
+}
+
+
+export async function createUsuario(
+    nombre: string,
+    email: string,
+    password: string,
+    rol: Rol,
+) {
+    const hash = createHash('sha256');
+    hash.update(password)
+
+    const connection = await createConnection();
+
+    const [result, fields] = await connection.query(
+        "INSERTO INTO usuarios (nombre, email, password, rol) VALUES (?, ?, ? ,?)",
+        [nombre, email, hash.digest('hex'), rol]
+    )
+
+    console.log(result);
+    console.log(fields);
+
+    return
 }

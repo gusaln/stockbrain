@@ -1,15 +1,11 @@
-import mysql from 'mysql'
+import mysql from 'mysql2/promise'
 
-/**
-* connection.query('SELECT 1 + 1 AS solution', function (error, results, fields) {
-*     if (error) throw error;
-*     console.log('The solution is: ', results[0].solution);
-* });
-*/
-export const connection = mysql.createPool({
-    connectionLimit: 10,
-    host: process.env.DB_HOST || '127.0.0.1',
-    user: process.env.DB_USERNAME || 'stockbrain',
-    password: process.env.DB_PASSWORD || 'secret',
-    database: 'stockbrain',
-});
+export function createConnection() {
+     return mysql.createConnection({
+        connectionLimit: 10,
+        host: process.env.DB_HOST || '127.0.0.1',
+        user: process.env.DB_USERNAME || 'stockbrain',
+        password: process.env.DB_PASSWORD || 'secret',
+        database: 'stockbrain',
+    });
+}
