@@ -95,10 +95,6 @@ interface AjusteInventario {
     id: number;
     operadorId: number;
     fecha: string;
-}
-
-interface AjusteInventarioItem {
-    id: number;
     almacenId: number;
     productoId: number;
     tipo: AjusteInventarioTipo;
@@ -124,5 +120,3 @@ interface MovimientoInventario {
     almacenOrigenId: number;
     almacenDestinoId: number | null; // Sólo se usaría para las transferencias ?
 }
-
-export function get

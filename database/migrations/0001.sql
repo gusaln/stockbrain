@@ -134,21 +134,12 @@ CREATE TABLE
         `id` BIGINT PRIMARY KEY,
         `operadorId` VARCHAR(128),
         `fecha` TIMESTAMP,
-        FOREIGN KEY (`operadorId`) REFERENCES `usuarios` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
-    );
-
-DROP IF EXISTS `ajustesInventarioItems`;
-
-CREATE TABLE
-    `ajustesInventarioItems` (
-        `id` BIGINT PRIMARY KEY,
-        `ajusteId` BIGINT,
         `almacenId` BIGINT,
         `productoId` BIGINT,
         `tipo` INT,
         `cantidad` INT,
         `motivo` VARCHAR(128),
-        FOREIGN KEY (`ajusteId`) REFERENCES `ajustesInventario` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
+        FOREIGN KEY (`operadorId`) REFERENCES `usuarios` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
         FOREIGN KEY (`almacenId`) REFERENCES `almacenes` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
         FOREIGN KEY (`productoId`) REFERENCES `productos` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
     );
