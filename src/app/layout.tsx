@@ -19,6 +19,10 @@ const rutas = [
         text: "Usuarios",
         href: "/usuarios",
     },
+    {
+        text: "Categorias",
+        href: "/categorias",
+    },
 ];
 
 function Navbar() {
@@ -26,7 +30,7 @@ function Navbar() {
         <nav className="w-full h-full shadow-md flex flex-col justify-start">
             {rutas.map((r) => {
                 return (
-                    <Link key={r.text} className="flex items-center justify-center h-12" href={r.href}>
+                    <Link key={r.text} className="flex items-center justify-center h-12 link" href={r.href}>
                         {r.text}
                     </Link>
                 );
@@ -41,7 +45,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en">
+        <html lang="en" data-theme="cyberpunk">
             <body className={inter.className + " flex h-dvh"}>
                 <aside className="w-80 h-full ">
                     <Navbar />
