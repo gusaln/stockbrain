@@ -8,8 +8,8 @@ import mysql from 'mysql'
 */
 export const connection = mysql.createPool({
     connectionLimit: 10,
-    host: process.env.DATABASE_HOST || '127.0.0.1',
-    user: process.env.DATABASE_USER || 'stockbrain',
-    password: process.env.DATABASE_SECRET || 'secret',
-    database: process.env.DATABASE_NAME || 'stockbrain',
+    host: process.env.DB_HOST || '127.0.0.1',
+    user: process.env.DB_USERNAME || 'stockbrain',
+    password: process.env.DB_PASSWORD || 'secret',
+    database: process.env.DB_DATABASE || 'stockbrain',
 });
