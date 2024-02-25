@@ -22,8 +22,13 @@ interface Almacen {
     encargado: string;
 }
 
-type Rol = "administrador" | "almacenero" | "tecnico";
-
+const ROL = {
+    "administrador": 1,
+    "almacenero": 2,
+    "tecnico": 3,
+} as const
+type RolEnum = (typeof ROL)
+type Rol = RolEnum[keyof RolEnum]
 interface Usuario {
     id: number;
     nombre: string;
