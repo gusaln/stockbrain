@@ -107,8 +107,10 @@ DROP IF EXISTS `ordenesConsumo`;
 CREATE TABLE
     `ordenesConsumo` (
         `id` BIGINT PRIMARY KEY,
+        `clienteId` BIGINT,
         `direccion` VARCHAR(128),
-        `fecha` TIMESTAMP
+        `fecha` TIMESTAMP,
+        FOREIGN KEY (`clienteId`) REFERENCES `clientes` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
     );
 
 DROP IF EXISTS `ordenesConsumoItems`;
