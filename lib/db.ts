@@ -11,5 +11,5 @@ export const connection = mysql.createPool({
     host: process.env.DB_HOST || '127.0.0.1',
     user: process.env.DB_USERNAME || 'stockbrain',
     password: process.env.DB_PASSWORD || 'secret',
-    database: process.env.DB_DATABASE || 'stockbrain',
+    database: 'stockbrain',
 });

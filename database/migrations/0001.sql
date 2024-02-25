@@ -1,4 +1,4 @@
-CREATE DATABASE `stockbrain`;
+CREATE DATABASE IF NOT EXISTS `stockbrain`;
 
 -- Referencia de tamaño
 --  32 caracteres 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
