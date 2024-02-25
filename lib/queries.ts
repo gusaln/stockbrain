@@ -90,6 +90,7 @@ const AJUSTE_INVENTARIO_TIPO = {
 } as const
 type AjusteInventarioTipoEnum = (typeof MOVIMIENTO_INVENTARIO_TIPO)
 type AjusteInventarioTipo = AjusteInventarioTipoEnum[keyof AjusteInventarioTipoEnum]
+
 interface AjusteInventario {
     id: number;
     operadorId: number;
@@ -119,8 +120,9 @@ interface MovimientoInventario {
     fecha: string;
     productoId: number;
     tipo: MovimientoInventarioTipo;
-    almacenId: number;
     cantidad: number;
     almacenOrigenId: number;
     almacenDestinoId: number | null; // Sólo se usaría para las transferencias ?
 }
+
+export function get
