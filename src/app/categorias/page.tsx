@@ -1,5 +1,4 @@
-import { Categoria } from "../../../lib/queries";
-
+import { Categoria } from "@/lib/queries";
 
 export default function Categorias() {
     const categorias: Categoria[] = [];

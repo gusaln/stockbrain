@@ -21,7 +21,7 @@ const config: Config = {
   ],
 
   daisyui: {
-    themes: ["cyberpunk"]
+    themes: ["cyberpunk", "corporate"]
   }
 };
 export default config;
