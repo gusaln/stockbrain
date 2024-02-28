@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
+import Providers from "./providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,6 +23,10 @@ const rutas = [
     {
         text: "Categorias",
         href: "/categorias",
+    },
+    {
+        text: "Proveedores",
+        href: "/proveedores",
     },
 ];
 
@@ -61,11 +66,13 @@ export default function RootLayout({
     return (
         <html lang="en" data-theme="corporate">
             <body className={inter.className + " flex min-h-dvh"}>
-                <aside className="w-48">
-                    <Navbar />
-                </aside>
+                <Providers>
+                    <aside className="w-48">
+                        <Navbar />
+                    </aside>
 
-                <div className="h-full flex-grow flex-shrink-0 pt-6">{children}</div>
+                    <div className="h-full flex-grow flex-shrink-0 pt-6">{children}</div>
+                </Providers>
             </body>
         </html>
     );
