@@ -1,5 +1,4 @@
-import ResponsiveLayout, { ButtonAction, LinkAction } from "@/components/layouts/ResponsiveLayout";
-import { Proveedor, Usuario } from "../../lib/queries";
+import ResponsiveLayout, { LinkAction } from "@/components/layouts/ResponsiveLayout";
 import { ProveedoresTable } from "./ProveedoresTable";
 
 export default function Page() {
