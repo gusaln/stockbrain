@@ -7,6 +7,7 @@ import Input from "@/components/forms/Input";
 
 const initialState = {
     message: "",
+    errors: null
 };
 
 interface Props {
@@ -14,9 +15,6 @@ interface Props {
 }
 
 export default function Form(props: Props) {
-    const [password, setPassword] = useState("");
-    const [passwordConfirmation, setPasswordConfirmation] = useState("");
-
     const [state, formAction] = useFormState(props.onSubmit, initialState);
 
     return (
@@ -28,11 +26,11 @@ export default function Form(props: Props) {
                     {state?.message}
                 </p>
 
-                <Input name="nombre" label="Nombre" />
-                <Input name="contacto" label="Persona de contacto"  />
-                <Input name="telefono" label="Teléfono" type="tel" />
-                <Input name="email" label="Email" type="email" />
-                <Input name="direccion" label="Dirección" type="text" />
+                <Input name="nombre" label="Nombre" errors={state.errors?.nombre} />
+                <Input name="contacto" label="Persona de contacto"  errors={state.errors?.contacto}/>
+                <Input name="telefono" label="Teléfono" type="tel" errors={state.errors?.telefono}/>
+                <Input name="email" label="Email" type="email" errors={state.errors?.email}/>
+                <Input name="direccion" label="Dirección" type="text" errors={state.errors?.direccion}/>
 
                 <div className="card-actions justify-end">
                     <button type="submit" className="btn btn-primary">

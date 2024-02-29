@@ -2,11 +2,21 @@ import { InputHTMLAttributes } from "react";
 
 interface InputProps extends InputHTMLAttributes<string> {
     label?: string;
-    error?: string | null;
+    errors?: string | string[] | null;
+}
+
+function getError(errors: string | string[] | null) {
+    if (Array.isArray(errors)) {
+        return errors[0];
+    }
+
+    return errors;
 }
 
 export default function Input(props: InputProps) {
-    const { label, error, ...rest } = props;
+    const { label, errors, ...rest } = props;
+
+    const error = getError(errors);
 
     return (
         <label className="form-control w-full max-w-xs">

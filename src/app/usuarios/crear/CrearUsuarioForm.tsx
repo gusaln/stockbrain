@@ -43,7 +43,7 @@ export function CrearUsuarioForm(props: Props) {
                     type="password"
                     value={passwordConfirmation}
                     onChange={(ev) => setPasswordConfirmation(ev.target.value)}
-                    error={
+                    errors={
                         passwordConfirmation.length > 1 && password != passwordConfirmation
                             ? "no coincide con la contraseña"
                             : null

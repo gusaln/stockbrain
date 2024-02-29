@@ -1,12 +1,13 @@
 "use server";
 
-import { z } from "zod";
+import { z } from "@/validation";
+
 
 const schema = z.object({
     nombre: z.string().max(64),
     contacto: z.string().max(64),
     telefono: z.string().max(32),
-    email: z.string().max(128),
+    email: z.string().max(128).email(),
     direccion: z.string().max(128),
 });
 
@@ -32,5 +33,6 @@ export async function crearProveedor(prevState: any, formData: FormData) {
 
     return {
         message: "WE HAVE A SITUATION",
+        errors: null
     };
 }
