@@ -1,26 +1,20 @@
-export default function CrearCategoria() {
+import ResponsiveLayout, { LinkAction } from "@/components/layouts/ResponsiveLayout";
+import CrearForm from "./CrearForm";
+import { crearCategoria } from "./action";
+
+export default function Page() {
     return (
-        <div className="w-4/5 mx-auto space-y-6">
-            <section>
-                <form action="" method="post">
-                    <div>
-                        <label htmlFor="nombre">Nombre</label>
-                        <input type="text" name="nombre" />
-                    </div>
-
-                    <div>
-                        <label htmlFor="descripcion">Descripción</label>
-                        <input type="text" name="descripcion" />
-                    </div>
-
-                    <button
-                        type="submit"
-                        className="bg-gray-950 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition duration-50"
-                    >
-                        Crear
-                    </button>
-                </form>
+        <ResponsiveLayout
+            title="Registrar categoría"
+            acciones={() => {
+                return <LinkAction href="/categoria">Volver</LinkAction>;
+            }}
+        >
+            <section className="w-full justify-center flex">
+                <div className="card w-fit shadow-lg">
+                    <CrearForm onSubmit={crearCategoria} />
+                </div>
             </section>
-        </div>
+        </ResponsiveLayout>
     );
 }
