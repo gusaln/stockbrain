@@ -28,6 +28,10 @@ const rutas = [
         text: "Proveedores",
         href: "/proveedores",
     },
+    {   
+        text: "Productos", 
+        href: "/productos",
+    }
 ];
 
 function Navbar() {
