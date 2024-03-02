@@ -1,12 +1,13 @@
 export interface OrdenCompra {
     id: number;
-    direccion: string;
+    proveedorId: number;
     fecha: string;
+    operadorId: number;
 }
 
 export interface OrdenCompraItem {
     id: number;
-    almacenId: number;
+    ordenId: number;
     productoId: number;
     cantidad: number;
     precioUnitario: number;

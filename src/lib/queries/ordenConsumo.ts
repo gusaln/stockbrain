@@ -1,14 +1,15 @@
 export interface OrdenConsumo {
     id: number;
-    direccion: string;
+    descripcion: string;
     fecha: string;
+    operadorId: number;
 }
 
 export interface OrdenConsumoItem {
     id: number;
-    almacenId: number;
+    ordenId: number;
     productoId: number;
     cantidad: number;
-    precioUnitario: number;
-    total: number;
+    // precioUnitario: number;
+    // total: number;
 }

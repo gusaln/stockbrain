@@ -10,9 +10,11 @@ type MovimientoInventarioTipo = MovimientoInventarioTipoEnum[keyof MovimientoInv
 export interface MovimientoInventario {
     id: number;
     fecha: string;
+    operadorId: number;
     productoId: number;
+    estadoOrigenId: number | null; // Sólo se usaría para las transferencias ?
+    estadoDestinoId: number | null;
     tipo: MovimientoInventarioTipo;
+    relacionId: number | null;
     cantidad: number;
-    almacenOrigenId: number;
-    almacenDestinoId: number | null; // Sólo se usaría para las transferencias ?
 }
