@@ -28,6 +28,19 @@ const rutas = [
         text: "Proveedores",
         href: "/proveedores",
     },
+
+    {
+        text: "Almacenes",
+        href: "/almacenes",
+    },
+    {
+        text: "Ajustes de Inventario",
+        href: "/ajustes",
+    },
+    {
+        text: "Movimientos",
+        href: "/movimientos",
+    },
     {   
         text: "Productos", 
         href: "/productos",
@@ -46,9 +59,8 @@ function Navbar() {
             <div className="space-y-2">
                 {rutas.map((r) => {
                     return (
-                        <div className="flex items-center px-4">
+                        <div className="flex items-center px-4" key={r.text}>
                             <Link
-                                key={r.text}
                                 className="flex w-full p-2 rounded-md text-sm hover:bg-neutral hover:text-neutral-content transition duration-100 ease-out font-semibold"
                                 href={r.href}
                             >
