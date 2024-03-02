@@ -1,3 +1,19 @@
-export default function Users() {
-    return <div className="w-4/5 mx-auto">Users</div>;
+import ResponsiveLayout, { LinkAction } from "@/components/layouts/ResponsiveLayout";
+import { OrdenesConsumoTable } from "./OrdenesConsumoTable";
+
+export default function Page() {
+    return (
+        <ResponsiveLayout
+            title="Ordenes de consumo"
+            acciones={() => {
+                return <LinkAction href="/ordenes/consumo/crear">Registrar</LinkAction>;
+            }}
+        >
+            <section className="card w-full shadow-md">
+                <div className="card-body">
+                    <OrdenesConsumoTable/>
+                </div>
+            </section>
+        </ResponsiveLayout>
+    );
 }
