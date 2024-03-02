@@ -1,3 +1,19 @@
+import ResponsiveLayout, {LinkAction} from "@/components/layouts/ResponsiveLayout";
+import { ProductosTable } from "./ProductosTable";
+
 export default function Users() {
-    return <div className="w-4/5 mx-auto">Users</div>;
+    return (
+        <ResponsiveLayout 
+            title="Productos" 
+            acciones={() => { 
+                return <LinkAction href="/productos/crear">Registrar</LinkAction>;
+            }}
+        >
+            <section className="card w-full shadow-md">
+                <div className="card-body">
+                    <ProductosTable />
+                </div>    
+            </section>    
+        </ResponsiveLayout>
+    );
 }
