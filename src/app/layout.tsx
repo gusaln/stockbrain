@@ -30,6 +30,16 @@ const rutas = [
     },
 
     {
+        text: "Ordenes de compra",
+        href: "/ordenes/compra",
+    },
+    {
+        text: "Ordenes de consumo",
+        href: "/ordenes/consumo",
+    },
+
+
+    {
         text: "Almacenes",
         href: "/almacenes",
     },
