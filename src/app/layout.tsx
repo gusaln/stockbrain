@@ -28,6 +28,7 @@ const rutas = [
         text: "Proveedores",
         href: "/proveedores",
     },
+
     {
         text: "Almacenes",
         href: "/almacenes",
@@ -40,6 +41,10 @@ const rutas = [
         text: "Movimientos",
         href: "/movimientos",
     },
+    {   
+        text: "Productos", 
+        href: "/productos",
+    }
 ];
 
 function Navbar() {
