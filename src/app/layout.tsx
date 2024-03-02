@@ -28,6 +28,15 @@ const rutas = [
         text: "Proveedores",
         href: "/proveedores",
     },
+    {
+        text: "Ordenes de compra",
+        href: "/ordenes/compra",
+    },
+    {
+        text: "Ordenes de consumo",
+        href: "/ordenes/consumo",
+    },
+
 ];
 
 function Navbar() {
