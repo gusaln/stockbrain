@@ -36,7 +36,7 @@ interface Props {
 export default function ResponsiveLayout(props: Props) {
     return (
         <div className="w-11/12 sm:w-4/5 lg:3/5 mx-auto">
-            <h1 className="font-semibold underline decoration-wavy decoration-primary underline-offset-2">
+            <h1 className="font-semibold decoration-wavy decoration-primary">
                 {props.title}
             </h1>
 
