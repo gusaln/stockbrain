@@ -7,7 +7,7 @@ export default function Page() {
         <ResponsiveLayout
             title="Registrar categoría"
             acciones={() => {
-                return <LinkAction href="/categoria">Volver</LinkAction>;
+                return <LinkAction href="/categorias">Volver</LinkAction>;
             }}
         >
             <section className="w-full justify-center flex">
