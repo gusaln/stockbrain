@@ -7,7 +7,7 @@ export default function Page() {
         <ResponsiveLayout
             title="Registrar ajuste de inventario"
             acciones={() => {
-                return <LinkAction href="/almacen">Volver</LinkAction>;
+                return <LinkAction href="/ajustes">Volver</LinkAction>;
             }}
         >
             <section className="w-full justify-center flex">
