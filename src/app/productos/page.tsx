@@ -1,7 +1,7 @@
 import ResponsiveLayout, {LinkAction} from "@/components/layouts/ResponsiveLayout";
 import { ProductosTable } from "./ProductosTable";
 
-export default function Users() {
+export default function Page() {
     return (
         <ResponsiveLayout 
             title="Productos" 
