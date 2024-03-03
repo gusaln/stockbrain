@@ -4,7 +4,6 @@ import { PaginationSteps, usePagination } from "@/components/pagination";
 import { Producto } from "@/lib/queries";
 import { PaginatedResponse } from "@/utils";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
 
 export function ProductosTable(){
     const { page, setPage, limit, setLimit } = usePagination();
