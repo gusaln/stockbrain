@@ -1,5 +1,5 @@
 import { createHash } from "crypto";
-import { startConnection } from "../db";
+import { runQuery } from "../db";
 
 const ROL = {
     administrador: 1,
@@ -20,15 +20,12 @@ export async function createUsuario(nombre: string, email: string, password: str
     const hash = createHash("sha256");
     hash.update(password);
 
-    const connection = await startConnection();
-
-    const [result, fields] = await connection.query(
-        "INSERTO INTO usuarios (nombre, email, password, rol) VALUES (?, ?, ? ,?)",
-        [nombre, email, hash.digest("hex"), rol],
-    );
-
-    console.log(result);
-    console.log(fields);
+    const [result, fields] = await runQuery(async function (connection) {
+        return connection.query(
+            "INSERT INTO usuarios (nombre, email, password, rol) VALUES (?, ?, ? ,?)",
+            [nombre, email, hash.digest("hex"), rol],
+        );
+    })
 
     return;
 }
