@@ -6,7 +6,7 @@ import { PaginatedResponse } from "@/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
-export function ProveedoresTable() {
+export function Table() {
     const { page, setPage, limit, setLimit } = usePagination();
 
     const { data, error, isLoading, isError } = useQuery({

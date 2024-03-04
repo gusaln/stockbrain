@@ -1,5 +1,5 @@
 import ResponsiveLayout, { LinkAction } from "@/components/layouts/ResponsiveLayout";
-import { ProveedoresTable } from "./ProveedoresTable";
+import { Table } from "./Table";
 
 export default function Page() {
     return (
@@ -11,7 +11,7 @@ export default function Page() {
         >
             <section className="card w-full shadow-md">
                 <div className="card-body">
-                    <ProveedoresTable />
+                    <Table />
                 </div>
             </section>
         </ResponsiveLayout>
