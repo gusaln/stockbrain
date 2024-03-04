@@ -27,7 +27,7 @@ export default function Form(props: Props) {
                 </p>
 
                 <Input name="nombre" label="Nombre" errors={state.errors?.nombre} />
-                <Input name="descripcion" label="Persona de descripción"  errors={state.errors?.descripcion}/>
+                <Input name="descripcion" label="Descripción" errors={state.errors?.descripcion}/>
 
 
                 <div className="card-actions justify-end">

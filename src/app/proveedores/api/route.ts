@@ -8,7 +8,7 @@ export async function GET(request: NextRequest, context = {}) {
     const page = parseInt(url.searchParams.get('page') || '1', 10);
     const limit = parseInt(url.searchParams.get('limit') || '10', 10);
 
-    const result = await getProveedores()
+    const result = await getProveedores(undefined, {page, limit})
 
     return NextResponse.json(createPaginatedResponse(result.data, page, limit, result.total));
 }

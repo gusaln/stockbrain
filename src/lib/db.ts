@@ -9,18 +9,25 @@ const pool = mysql.createPool({
 })
 
 export async function runQuery<T = void>(cb: (c: mysql.PoolConnection
-    ) => Promise<T>): Promise<T> {
+) => Promise<T>): Promise<T> {
     let connection: mysql.PoolConnection
 
     try {
-        connection = await pool.getConnection()        
+        connection = await pool.getConnection()
     } catch (error) {
         throw error;
     }
 
     try {
-        return await cb(connection)
+        await connection.beginTransaction();
+        const res = await cb(connection)
+        await connection.commit()
+        return res
     } finally {
-        connection.release()
+        try {
+            await connection.rollback();
+        } finally {
+            connection.release()
+        }
     }
 }
