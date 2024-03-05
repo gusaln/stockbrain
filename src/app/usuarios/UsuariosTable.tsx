@@ -9,7 +9,7 @@ import { useState } from "react";
 export function UsuarioTable(){
     const { page, setPage, limit, setLimit } = usePagination();
 
-    const { data, error, isLoading, isError } = useQuery({
+    const { data, error, isFetching, isError } = useQuery({
         queryKey: ["/usuarios/api", {page: page, limit: limit}],
         queryFn: async({ queryKey }) => {
             const queryParams = queryKey[1] as {page: number, limit: number};
@@ -28,7 +28,7 @@ export function UsuarioTable(){
             total: 0,
         } as PaginatedResponse<Usuario>,
     });
-    if(isLoading) return <Loader />;
+    if (data.data.length < 1 && isFetching) return <Loader />;
     if(isError)
         return(<div role="alert" className="alert alert-error">
         <svg
