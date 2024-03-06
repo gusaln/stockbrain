@@ -43,26 +43,28 @@ export function PaginationSteps(props: {
     }
 
     return (
-        <div className="join">
-            {pages.map((page, index) => {
-                if (typeof page == "number") {
-                    return (
-                        <button
-                            key={index}
-                            className={`join-item btn ${page == props.page ? "btn-active" : ""}`}
-                            onClick={() => props.onPageChange(page)}
-                        >
-                            {page}
-                        </button>
-                    );
-                } else {
-                    return (
-                        <button key={index} className="join-item btn btn-disabled">
-                            {page}
-                        </button>
-                    );
-                }
-            })}
+        <div className="flex justify-end mt-4">
+            <div className="join">
+                {pages.map((page, index) => {
+                    if (typeof page == "number") {
+                        return (
+                            <button
+                                key={index}
+                                className={`join-item btn ${page == props.page ? "btn-active" : ""}`}
+                                onClick={() => props.onPageChange(page)}
+                            >
+                                {page}
+                            </button>
+                        );
+                    } else {
+                        return (
+                            <button key={index} className="join-item btn btn-disabled">
+                                {page}
+                            </button>
+                        );
+                    }
+                })}
+            </div>
         </div>
     );
 }

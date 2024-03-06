@@ -11,7 +11,9 @@ export default function Page() {
         >
             <section className="card w-full shadow-md">
                 <div className="card-body">
-                    <ProductosTable />
+                    <div className="flex justify-center">
+                        <ProductosTable />
+                    </div>
                 </div>    
             </section>    
         </ResponsiveLayout>

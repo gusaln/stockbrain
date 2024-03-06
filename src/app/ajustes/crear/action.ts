@@ -5,8 +5,8 @@ import { z } from "@/validation";
 
 const schema = z.object({
     fecha: z.string().max(64),
-    almacen: z.number().max(64),
-    producto: z.number().max(64),
+    almacenId: z.number().max(64),
+    productoId: z.number().max(64),
     tipo: z.number().max(1),
     cantidad: z.number(),
     motivo: z.string().max(300),
@@ -15,8 +15,8 @@ const schema = z.object({
 export async function crearAjuste(prevState: any, formData: FormData) {
     const validatedFields = schema.safeParse({
         fecha: formData.get('fecha'),
-        almacen: formData.get('almacen'),
-        producto: formData.get('producto'),
+        almacenId: formData.get('almacenId'),
+        productoId: formData.get('productoId'),
         tipo: formData.get('tipo'),
         cantidad: formData.get('cantidad'),
         motivo: formData.get('motivo'),

@@ -1,6 +1,8 @@
 "use server";
 
+import { createCategoria } from "@/lib/queries";
 import { z } from "@/validation";
+import { redirect } from "next/navigation";
 
 
 const schema = z.object({
@@ -19,14 +21,20 @@ export async function crearCategoria(prevState: any, formData: FormData) {
         console.error(validatedFields.error.message, validatedFields.error.flatten().fieldErrors)
 
         return {
-            message: "Error al crear la categoría: " + validatedFields.error.message,
+            message: "Error: " + validatedFields.error.message,
             errors: validatedFields.error.flatten().fieldErrors,
         }
     }
 
+    const productoId = await createCategoria(
+        validatedFields.data.nombre,
+        validatedFields.data.descripcion,
+    )
+
+    redirect("/categorias?"+new URLSearchParams({"message[success]": "Categoría registrada con éxito"}));
 
     return {
-        message: "WE HAVE A SITUATION",
-        errors: null
-    };
+        message: "Success",
+        errors: null,
+    }
 }

@@ -1,5 +1,5 @@
 import ResponsiveLayout, { LinkAction } from "@/components/layouts/ResponsiveLayout";
-import CrearProveedorForm from "./CrearProveedorForm";
+import CrearForm from "./CrearForm";
 import { crearProveedor } from "./action";
 
 export default function Page() {
@@ -12,7 +12,7 @@ export default function Page() {
         >
             <section className="w-full justify-center flex">
                 <div className="card w-fit shadow-lg">
-                    <CrearProveedorForm onSubmit={crearProveedor} />
+                    <CrearForm onSubmit={crearProveedor} />
                 </div>
             </section>
         </ResponsiveLayout>

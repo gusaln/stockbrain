@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
 import Providers from "./providers";
+import Image from "next/image";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -62,7 +63,13 @@ function Navbar() {
         <nav className="w-full h-full shadow-md flex flex-col justify-start">
             <div className="w-full h-16 flex items-end">
                 <Link className="flex w-full p-2 rounded-md text-sm" href="">
-                    icon
+                    <Image 
+                        alt="icon" 
+                        src="/Lida-Logo.svg" 
+                        width={50}
+                        height={50}
+                        className="rounded-lg"
+                    />
                 </Link>
             </div>
 

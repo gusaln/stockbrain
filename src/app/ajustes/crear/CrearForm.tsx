@@ -27,8 +27,8 @@ export default function Form(props: Props) {
                 </p>
 
                 <Input type="date" name="fecha" label="Fecha" errors={state.errors?.fecha} />
-                <Input name="almacen" label="Almacén" errors={state.errors?.almacen} />
-                <Input name="producto" label="Producto" errors={state.errors?.producto} />
+                <Input name="almacen" label="Almacén" errors={state.errors?.almacenId} />
+                <Input name="producto" label="Producto" errors={state.errors?.productoId} />
                 <Input name="tipo" label="Tipo" errors={state.errors?.tipo} />
                 <Input name="cantidad" label="Cantidad" errors={state.errors?.cantidad} />
                 <Input name="motivo" label="Motivo" errors={state.errors?.motivo} />

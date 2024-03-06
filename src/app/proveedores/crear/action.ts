@@ -1,14 +1,16 @@
 "use server";
 
+import { createProveedor } from "@/lib/queries/proveedor";
 import { z } from "@/validation";
+import { redirect } from "next/navigation";
 
 
 const schema = z.object({
-    nombre: z.string().max(64),
-    contacto: z.string().max(64),
-    telefono: z.string().max(32),
+    nombre: z.string().min(1).max(64),
+    contacto: z.string().min(1).max(64),
+    telefono: z.string().min(11).max(32),
     email: z.string().max(128).email(),
-    direccion: z.string().max(128),
+    direccion: z.string().min(5).max(128),
 });
 
 export async function crearProveedor(prevState: any, formData: FormData) {
@@ -25,14 +27,25 @@ export async function crearProveedor(prevState: any, formData: FormData) {
         console.error(validatedFields.error.message, validatedFields.error.flatten().fieldErrors)
 
         return {
-            message: "Error al crear el proveedor: " + validatedFields.error.message,
+            message: "Error: " + validatedFields.error.message,
             errors: validatedFields.error.flatten().fieldErrors,
         }
     }
 
+    const proveedorId = await createProveedor(
+        validatedFields.data.nombre,
+        validatedFields.data.contacto,
+        validatedFields.data.telefono,
+        validatedFields.data.email,
+        validatedFields.data.direccion,
+    )
+
+    redirect("/proveedores?"+new URLSearchParams({
+        "message[success]": "Proveedor registrado con éxito"
+    }));
 
     return {
-        message: "WE HAVE A SITUATION",
-        errors: null
-    };
+        message: "Success",
+        errors: null,
+    }
 }

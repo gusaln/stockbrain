@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ButtonHTMLAttributes, ReactNode } from "react";
+import { Messages } from "./Messages";
 
 interface ButtonActionProps {
     href: string;
@@ -36,9 +37,9 @@ interface Props {
 export default function ResponsiveLayout(props: Props) {
     return (
         <div className="w-11/12 sm:w-4/5 lg:3/5 mx-auto">
-            <h1 className="font-semibold decoration-wavy decoration-primary">
-                {props.title}
-            </h1>
+            <h1 className="font-semibold decoration-wavy decoration-primary">{props.title}</h1>
+
+            <Messages/>
 
             <section className="flex justify-end space-x-2 mb-4">{props.acciones()}</section>
 
