@@ -50,3 +50,33 @@ export async function getCategorias(search = undefined, pagination: Pagination =
         total: total as number
     }
 }
+
+export async function findCategoria(id: number) {
+    const [data, dataField] = await runQuery(async function (connection) {
+        const [dataRes, dataField] = await connection.query(
+            "SELECT * FROM categorias WHERE id = ?",
+            [id]
+        );
+
+        return [dataRes[0], dataField]
+    });
+
+    return data as Categoria | null;
+}
+
+export async function updateCategoria(id: number, categoria: Exclude<Categoria, "id">) {
+    const [data, dataField] = await runQuery(async function (connection) {
+        const [dataRes, dataField] = await connection.query(
+            `UPDATE categorias 
+            SET 
+                nombre = ?, 
+                descripcion = ?
+            WHERE id = ?`,
+            [categoria.nombre, categoria.descripcion, id]
+        );
+
+        return [dataRes[0], dataField]
+    });
+
+    return data as Categoria | null;
+}

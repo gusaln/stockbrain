@@ -1,5 +1,10 @@
 import ResponsiveLayout, { LinkAction } from "@/components/layouts/ResponsiveLayout";
+import { Metadata } from "next";
 import { Table } from "./Table";
+
+export const metadata: Metadata = {
+    title: "Categorias",
+};
 
 export default function Page() {
     return (
