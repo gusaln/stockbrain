@@ -4,9 +4,9 @@ import { z } from "@/validation";
 
 
 const schema = z.object({
-    proveedorId: z.string().max(64),
-    fecha: z.string().max(64),
-    operadorId: z.string().max(32),
+    proveedorId: z.number().int().positive(),
+    fecha: z.string().trim().max(64),
+    operadorId: z.number().int().positive(),
 });
 
 export async function crearOrdenCompra(prevState: any, formData: FormData) {
