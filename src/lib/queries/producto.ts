@@ -85,3 +85,36 @@ export async function getProductosWithCategorias(search = undefined, pagination:
         total: total as number
     }
 }
+
+export async function findProducto(id: number) {
+    const [data, dataField] = await runQuery(async function (connection) {
+        const [dataRes, dataField] = await connection.query(
+            "SELECT * FROM productos WHERE id = ?",
+            [id]
+        );
+
+        return [dataRes[0], dataField]
+    });
+
+    return data as Producto | null;
+}
+
+export async function updateProducto(id: number, producto: Exclude<Producto, "id">) {
+    const [data, dataField] = await runQuery(async function (connection) {
+        const [dataRes, dataField] = await connection.query(
+            `UPDATE productos 
+            SET 
+                categoriaId = ?,
+                marca = ?,
+                modelo = ?,
+                descripcion = ?,
+                imagen = ?
+            WHERE id = ?`,
+            [producto.categoriaId, producto.marca, producto.modelo, producto.descripcion, producto.imagen, id]
+        );
+
+        return [dataRes[0], dataField]
+    });
+
+    return data as Producto | null;
+}
