@@ -6,8 +6,11 @@ import { redirect } from "next/navigation";
 
 
 const schema = z.object({
-    nombre: z.string().max(64).trim(),
+    categoriaId: z.string().max(64).trim(),
+    marca: z.string().max(64).trim(),
+    modelo: z.string().max(64).trim(),
     descripcion: z.string().max(64).trim(),
+    imagen: z.string().max(64).nullable(),
 });
 
 export async function editarProducto(productoId: number, prevState: any, formData: FormData) {
