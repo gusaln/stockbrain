@@ -9,7 +9,7 @@ import { useState } from "react";
 export function Table() {
     const { page, setPage, limit, setLimit } = usePagination();
 
-    const { data, error, isLoading, isError } = useQuery({
+    const { data, error, isLoading, isFetching, isError } = useQuery({
         queryKey: ["/categorias/api", { page: page, limit: limit }],
         queryFn: async ({ queryKey }) => {
             const url = new URLSearchParams({
@@ -28,7 +28,7 @@ export function Table() {
         } as PaginatedResponse<Categoria>,
     });
 
-    if (isLoading) return <Loader />;
+    if (data.data.length < 1 && isFetching) return <Loader />;
     if (isError)
         return (
             <div role="alert" className="alert alert-error">
@@ -60,13 +60,13 @@ export function Table() {
             </thead>
 
             <tbody>
-                {data.data?.map((p) => {
+                {data.data?.map((categoria) => {
                     return (
-                        <tr key={p.id}>
-                            <td>{p.nombre}</td>
-                            <td>{p.descripcion}</td>
+                        <tr key={categoria.id}>
+                            <td>{categoria.nombre}</td>
+                            <td>{categoria.descripcion}</td>
                             <th>
-                                <button className="btn btn-ghost btn-sm">editar</button>
+                                <a href={`/categorias/${categoria.id}/editar`} className="btn btn-ghost btn-sm">editar</a>
                             </th>
                         </tr>
                     );

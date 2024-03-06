@@ -9,7 +9,7 @@ import { useState } from "react";
 export function Table() {
     const { page, setPage, limit, setLimit } = usePagination();
 
-    const { data, error, isLoading, isError } = useQuery({
+    const { data, error, isFetching, isError } = useQuery({
         queryKey: ["/movimientos/api", { page: page, limit: limit }],
         queryFn: async ({ queryKey }) => {
             const queryParams = queryKey[1] as { page: number; limit: number; }; // Cast queryKey[1] to the correct type
@@ -30,7 +30,7 @@ export function Table() {
         } as PaginatedResponse<MovimientoInventario>,
     });
 
-    if (isLoading) return <Loader />;
+    if (data.data.length < 1 && isFetching) return <Loader />;
     if (isError)
         return (
             <div role="alert" className="alert alert-error">

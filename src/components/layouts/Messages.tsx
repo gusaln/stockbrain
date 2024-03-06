@@ -2,28 +2,29 @@
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 export function Messages() {
     const searchParams = useSearchParams();
 
-    const [message, setMessage] = useState<string|null>();
+    useEffect(function () {
+        const url = new URL(location.href);
 
-    useEffect(function() {
-        const url = new URL(location.href)
+        if (searchParams.has("message[success]")) {
+            toast.success(searchParams.get("message[success]"));
 
-        if (!searchParams.has("message[success]")) {
-            return
+            url.searchParams.delete("message[success]");
         }
 
-        setMessage(searchParams.get("message[success]"))
-        
-        url.searchParams.delete("message[success]")
-        
-        history.replaceState(null, "", url)
-    }, [])
+        history.replaceState(null, "", url);
+    }, []);
 
     return (
         <>
-            {message && (
+            <ToastContainer pauseOnHover position="bottom-right"/>
+
+            {/* {message && (
                 <div role="alert" className="alert alert-success mb-12">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -40,7 +41,7 @@ export function Messages() {
                     </svg>
                     <span>{message}</span>
                 </div>
-            )}
+            )} */}
         </>
     );
 }

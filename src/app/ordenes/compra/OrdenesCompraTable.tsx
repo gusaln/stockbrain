@@ -9,7 +9,7 @@ import { useState } from "react";
 export function OrdenesCompraTable() {
     const { page, setPage, limit, setLimit } = usePagination();
 
-    const { data, error, isLoading, isError } = useQuery({
+    const { data, error, isFetching, isError } = useQuery({
         queryKey: ["/ordenes/compra/api", { page: page, limit: limit }],
         queryFn: async ({ queryKey }) => {
             const url = new URLSearchParams({
@@ -28,7 +28,7 @@ export function OrdenesCompraTable() {
         } as PaginatedResponse<OrdenCompra>,
     });
 
-    if (isLoading) return <Loader />;
+    if (data.data.length < 1 && isFetching) return <Loader />;
     if (isError)
         return (
             <div role="alert" className="alert alert-error">
