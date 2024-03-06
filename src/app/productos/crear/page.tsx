@@ -1,20 +1,20 @@
 import ResponsiveLayout, { LinkAction } from "@/components/layouts/ResponsiveLayout";
-import CrearForm from "./CrearForm";
-import { crearProveedor } from "./action";
+import { crearProducto } from "./action";
+import CrearProductoForm from './CrearProductoForm';
 
-export default function Page() {
-    return (
+export default function Page(){
+    return(
         <ResponsiveLayout
-            title="Registrar proveedor"
+            title="Registrar un Producto"
             acciones={() => {
-                return <LinkAction href="/proveedor">Volver</LinkAction>;
+                return <LinkAction href='/productos'>Volver</LinkAction>;
             }}
         >
             <section className="w-full justify-center flex">
                 <div className="card w-fit shadow-lg">
-                    <CrearForm onSubmit={crearProveedor} />
+                    <CrearProductoForm onSubmit={crearProducto} />
                 </div>
             </section>
         </ResponsiveLayout>
-    );
+    )
 }

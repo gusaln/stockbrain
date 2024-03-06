@@ -1,10 +1,9 @@
 "use client";
 import { Loader } from "@/components/Loader";
 import { PaginationSteps, usePagination } from "@/components/pagination";
-import { Producto } from "@/lib/queries";
+import { Categoria, Producto } from "@/lib/queries";
 import { PaginatedResponse } from "@/utils";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
 
 export function ProductosTable(){
     const { page, setPage, limit, setLimit } = usePagination();
@@ -12,21 +11,22 @@ export function ProductosTable(){
     const {data, error, isLoading, isError } = useQuery({
         queryKey: ["/productos/api", { page: page, limit: limit }],
         queryFn: async ({ queryKey }) => {
+            const queryParams = queryKey[1] as {page: number, limit: number};
             const url = new URLSearchParams({
-                page: queryKey[1].page.toString(),
-                limit: queryKey[1].limit.toString(),
+                page: queryParams.page.toString(),
+                limit: queryParams.limit.toString(),
             });
 
             const res = await fetch(queryKey[0] + "?" + url.toString());
             
-            return (await res.json()) as PaginatedResponse<Producto>;
+            return (await res.json()) as PaginatedResponse<Producto & {categoria: Pick<Categoria, "nombre">}>;
         },
         initialData: {
             data: [],
             page: 1, 
             limit: 10, 
             total: 0,
-        } as PaginatedResponse<Producto>,
+        },
     });
 
     if(isLoading) return <Loader />;
@@ -65,11 +65,11 @@ export function ProductosTable(){
                 {data.data?.map((p) =>{
                     return(
                         <tr key={p.id}>
-                            <td>{p.categoriaId}</td>
-                            <td>{p.marca}</td>
-                            <td>{p.modelo}</td>
-                            <th>{p.descripcion}</th>
-                            <th>{p.imagen}</th>
+                            <td>{p.categoria.nombre}</td>
+                            <th>{p.marca}</th>
+                            <th>{p.modelo}</th>
+                            <td>{p.descripcion}</td>
+                            <td>{p.imagen ?? '-'}</td>
                             <th>
                                 <button className="btn btn-ghost btn-sm">editar</button>
                             </th>
@@ -80,7 +80,7 @@ export function ProductosTable(){
 
             <tfoot>
                 <tr>
-                    <td colSpan="6">
+                    <td colSpan={6}>
                         <PaginationSteps page={page} total={data.total} limit={limit} onPageChange={setPage} />
                     </td>
                 </tr>

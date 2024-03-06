@@ -3,11 +3,17 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
 import Providers from "./providers";
+import Image from "next/image";
+import { Suspense } from "react";
+import { Loader } from "@/components/Loader";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: "StockBrain",
+    title: {
+        template: "%s | StockBrain",
+        default: "StockBrain"
+    },
     description: "",
 };
 
@@ -38,7 +44,6 @@ const rutas = [
         href: "/ordenes/consumo",
     },
 
-
     {
         text: "Almacenes",
         href: "/almacenes",
@@ -51,10 +56,10 @@ const rutas = [
         text: "Movimientos",
         href: "/movimientos",
     },
-    {   
-        text: "Productos", 
+    {
+        text: "Productos",
         href: "/productos",
-    }
+    },
 ];
 
 function Navbar() {
@@ -62,7 +67,7 @@ function Navbar() {
         <nav className="w-full h-full shadow-md flex flex-col justify-start">
             <div className="w-full h-16 flex items-end">
                 <Link className="flex w-full p-2 rounded-md text-sm" href="">
-                    icon
+                    <Image alt="icon" src="/Lida-Logo.svg" width={50} height={50} className="rounded-lg" />
                 </Link>
             </div>
 
@@ -97,7 +102,9 @@ export default function RootLayout({
                         <Navbar />
                     </aside>
 
-                    <div className="h-full flex-grow flex-shrink-0 pt-6">{children}</div>
+                    <div className="h-full flex-grow flex-shrink-0 pt-6">
+                        <Suspense fallback={<Loader />}>{children}</Suspense>
+                    </div>
                 </Providers>
             </body>
         </html>

@@ -1,7 +1,7 @@
 import ResponsiveLayout, {LinkAction} from "@/components/layouts/ResponsiveLayout";
 import { ProductosTable } from "./ProductosTable";
 
-export default function Users() {
+export default function Page() {
     return (
         <ResponsiveLayout 
             title="Productos" 
@@ -11,7 +11,9 @@ export default function Users() {
         >
             <section className="card w-full shadow-md">
                 <div className="card-body">
-                    <ProductosTable />
+                    <div className="flex justify-center">
+                        <ProductosTable />
+                    </div>
                 </div>    
             </section>    
         </ResponsiveLayout>

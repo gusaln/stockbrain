@@ -1,3 +1,4 @@
+DROP DATABASE IF EXISTS `stockbrain`;
 CREATE DATABASE IF NOT EXISTS `stockbrain`;
 
 -- Referencia de tamaño
@@ -6,20 +7,20 @@ CREATE DATABASE IF NOT EXISTS `stockbrain`;
 -- 128 caracteres 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
 USE `stockbrain`;
 
-DROP IF EXISTS `categorias`;
+DROP TABLE IF EXISTS `categorias`;
 
 CREATE TABLE
     `categorias` (
-        `id` BIGINT PRIMARY KEY,
+        `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
         `nombre` VARCHAR(64),
         `descripcion` VARCHAR(128)
     );
 
-DROP IF EXISTS `proveedores`;
+DROP TABLE IF EXISTS `proveedores`;
 
 CREATE TABLE
     `proveedores` (
-        `id` BIGINT PRIMARY KEY,
+        `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
         `nombre` VARCHAR(64),
         `contacto` VARCHAR(64),
         `telefono` VARCHAR(32),
@@ -27,41 +28,41 @@ CREATE TABLE
         `direccion` VARCHAR(128)
     );
 
--- DROP IF EXISTS `almacenes`;
+-- DROP TABLE IF EXISTS `almacenes`;
 
 -- CREATE TABLE
 --     `almacenes` (
---         `id` BIGINT PRIMARY KEY,
+--         `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
 --         `nombre` VARCHAR(64),
 --         `ubicacion` VARCHAR(64)
 --     );
 
-DROP IF EXISTS `usuarios`;
+DROP TABLE IF EXISTS `usuarios`;
 
 CREATE TABLE
     `usuarios` (
-        `id` BIGINT PRIMARY KEY,
+        `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
         `nombre` VARCHAR(64),
         `email` VARCHAR(128),
         `password` VARCHAR(128),
         `rol` INT
     );
 
-DROP IF EXISTS `clientes`;
+DROP TABLE IF EXISTS `clientes`;
 
 CREATE TABLE
     `clientes` (
-        `id` BIGINT PRIMARY KEY,
+        `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
         `nombre` VARCHAR(64),
         `responsable` VARCHAR(64),
         `ubicacion` VARCHAR(64)
     );
 
-DROP IF EXISTS `productos`;
+DROP TABLE IF EXISTS `productos`;
 
 CREATE TABLE
     `productos` (
-        `id` BIGINT PRIMARY KEY,
+        `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
         `categoriaId` BIGINT,
         -- `proveedorId` BIGINT,
         `marca` VARCHAR(128),
@@ -75,7 +76,7 @@ CREATE TABLE
 
 CREATE TABLE
     `productoStocks` (
-        `id` BIGINT PRIMARY KEY,
+        `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
         `productoId` BIGINT,
         `identificador` VARCHAR(128),
         `estado` TINYINT,
@@ -83,20 +84,20 @@ CREATE TABLE
         FOREIGN KEY (`productoId`) REFERENCES `productos` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
     );
 
--- DROP IF EXISTS `almacenes`;
+-- DROP TABLE IF EXISTS `almacenes`;
 
 -- CREATE TABLE
 --     `almacenes` (
---         `id` BIGINT PRIMARY KEY,
+--         `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
 --         `nombre` VARCHAR(64),
 --         `ubicacion` VARCHAR(64)
 --     );
 
-DROP IF EXISTS `ordenesCompra`;
+DROP TABLE IF EXISTS `ordenesCompra`;
 
 CREATE TABLE
     `ordenesCompra` (
-        `id` BIGINT PRIMARY KEY,
+        `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
         `proveedorId` BIGINT,
         `fecha` TIMESTAMP,
         `operadorId` BIGINT,
@@ -104,11 +105,11 @@ CREATE TABLE
         FOREIGN KEY (`proveedorId`) REFERENCES `proveedores` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
     );
 
-DROP IF EXISTS `ordenesCompraItems`;
+DROP TABLE IF EXISTS `ordenesCompraItems`;
 
 CREATE TABLE
     `ordenesCompraItems` (
-        `id` BIGINT PRIMARY KEY,
+        `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
         `ordenId` BIGINT,
         -- `almacenId` BIGINT,
         `productoId` BIGINT,
@@ -120,11 +121,11 @@ CREATE TABLE
         FOREIGN KEY (`productoId`) REFERENCES `productos` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
     );
 
-DROP IF EXISTS `ordenesConsumo`;
+DROP TABLE IF EXISTS `ordenesConsumo`;
 
 CREATE TABLE
     `ordenesConsumo` (
-        `id` BIGINT PRIMARY KEY,
+        `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
         -- `clienteId` BIGINT,
         `descripcion` VARCHAR(128),
         `fecha` TIMESTAMP,
@@ -133,11 +134,11 @@ CREATE TABLE
         FOREIGN KEY (`operadorId`) REFERENCES `usuarios` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
     );
 
-DROP IF EXISTS `ordenesConsumoItems`;
+DROP TABLE IF EXISTS `ordenesConsumoItems`;
 
 CREATE TABLE
     `ordenesConsumoItems` (
-        `id` BIGINT PRIMARY KEY,
+        `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
         `ordenId` BIGINT,
         -- `almacenId` BIGINT,
         `productoId` BIGINT,
@@ -149,11 +150,11 @@ CREATE TABLE
         FOREIGN KEY (`productoId`) REFERENCES `productos` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
     );
 
-DROP IF EXISTS `ajustesInventario`;
+DROP TABLE IF EXISTS `ajustesInventario`;
 
 CREATE TABLE
     `ajustesInventario` (
-        `id` BIGINT PRIMARY KEY,
+        `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
         `operadorId` BIGINT,
         `fecha` TIMESTAMP,
         -- `almacenId` BIGINT,
@@ -167,11 +168,11 @@ CREATE TABLE
         FOREIGN KEY (`productoId`) REFERENCES `productos` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
     );
 
-DROP IF EXISTS `movimientosInventario`;
+DROP TABLE IF EXISTS `movimientosInventario`;
 
 CREATE TABLE
     `movimientosInventario` (
-        `id` BIGINT PRIMARY KEY,
+        `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
         `fecha` TIMESTAMP,
         `operadorId` BIGINT,
         `productoId` BIGINT,

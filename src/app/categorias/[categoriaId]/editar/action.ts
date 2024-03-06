@@ -1,16 +1,16 @@
 "use server";
 
-import { createCategoria } from "@/lib/queries";
+import { updateCategoria } from "@/lib/queries";
 import { z } from "@/validation";
 import { redirect } from "next/navigation";
 
 
 const schema = z.object({
-    nombre: z.string().max(64),
-    descripcion: z.string().max(64),
+    nombre: z.string().max(64).trim(),
+    descripcion: z.string().max(64).trim(),
 });
 
-export async function crearCategoria(prevState: any, formData: FormData) {
+export async function editarCategoria(categoriaId: number, prevState: any, formData: FormData) {
     const validatedFields = schema.safeParse({
         nombre: formData.get('nombre'),
         descripcion: formData.get('descripcion'),
@@ -26,12 +26,12 @@ export async function crearCategoria(prevState: any, formData: FormData) {
         }
     }
 
-    const productoId = await createCategoria(
-        validatedFields.data.nombre,
-        validatedFields.data.descripcion,
+    await updateCategoria(
+        categoriaId,
+        validatedFields.data,
     )
 
-    redirect("/categorias?"+new URLSearchParams({"message[success]": "Categoría registrada con éxito"}));
+    redirect("/categorias?"+new URLSearchParams({"message[success]": "Categoría editada con éxito"}));
 
     return {
         message: "Success",

@@ -6,10 +6,10 @@ import { PaginatedResponse } from "@/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
-export function ProveedoresTable() {
+export function Table() {
     const { page, setPage, limit, setLimit } = usePagination();
 
-    const { data, error, isLoading, isError } = useQuery({
+    const { data, error, isFetching, isError } = useQuery({
         queryKey: ["/proveedores/api", { page: page, limit: limit }],
         queryFn: async ({ queryKey }) => {
             const url = new URLSearchParams({
@@ -28,7 +28,7 @@ export function ProveedoresTable() {
         } as PaginatedResponse<Proveedor>,
     });
 
-    if (isLoading) return <Loader />;
+    if (data.data.length < 1 && isFetching) return <Loader />;
     if (isError)
         return (
             <div role="alert" className="alert alert-error">
