@@ -6,11 +6,11 @@ import { redirect } from "next/navigation";
 
 
 const schema = z.object({
-    nombre: z.string().min(1).max(64),
-    contacto: z.string().min(1).max(64),
-    telefono: z.string().min(11).max(32),
-    email: z.string().max(128).email(),
-    direccion: z.string().min(5).max(128),
+    nombre: z.string().trim().min(1).max(64),
+    contacto: z.string().trim().min(1).max(64),
+    telefono: z.string().trim().min(11).max(32),
+    email: z.string().trim().email().max(128),
+    direccion: z.string().trim().min(5).max(128),
 });
 
 export async function crearProveedor(prevState: any, formData: FormData) {

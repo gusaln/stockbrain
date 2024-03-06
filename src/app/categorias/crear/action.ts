@@ -6,8 +6,8 @@ import { redirect } from "next/navigation";
 
 
 const schema = z.object({
-    nombre: z.string().max(64),
-    descripcion: z.string().max(64),
+    nombre: z.string().trim().max(64),
+    descripcion: z.string().trim().max(128),
 });
 
 export async function crearCategoria(prevState: any, formData: FormData) {

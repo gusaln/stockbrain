@@ -4,11 +4,11 @@ import { z } from "@/validation";
 import { redirect } from "next/navigation";
 
 const schema = z.object({
-    categoriaId: z.number().int().max(64),
-    marca: z.string().max(64),
-    modelo: z.string().max(64),
-    descripcion: z.string().max(64),
-    imagen: z.string().max(64).nullable(),
+    categoriaId: z.number().int(),
+    marca: z.string().trim().max(64),
+    modelo: z.string().trim().max(64),
+    descripcion: z.string().trim().max(128),
+    imagen: z.string().trim().max(64).nullable(),
 }).refine(async (data) => await existsCategoria(data.categoriaId), {
     message: "Categoría no registrada",
     path: ["categoriaId"]

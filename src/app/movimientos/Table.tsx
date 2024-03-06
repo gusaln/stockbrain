@@ -73,8 +73,8 @@ export function Table() {
                             <td>{p.operadorId}</td>
                             <td>{p.fecha}</td>
                             <td>{p.productoId}</td>
-                            <td>{p.estadoOrigenId}</td>
-                            <td>{p.estadoDestinoId}</td>
+                            <td>{p.estadoOrigen}</td>
+                            <td>{p.estadoDestino}</td>
                             <td>{p.tipo}</td>
                             <td>{p.cantidad}</td>
                             <th>

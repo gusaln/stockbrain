@@ -1,4 +1,5 @@
 import { runQuery } from "../db";
+import { Pagination } from "./pagination";
 
 export interface Categoria {
     id: number;
