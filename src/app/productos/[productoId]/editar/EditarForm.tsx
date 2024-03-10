@@ -51,21 +51,21 @@ export default function Form({ producto, onSubmit }: Props) {
                     label="Id de categoría"
                     onChange={(ev) => setCategoriaId(ev.target.value)}
                     value={categoriaId}
-                    errors={state.errors?.nombre}
+                    errors={state.errors?.categoriaId}
                 />
                 <Input
                     name="marca"
                     label="Marca"
                     onChange={(ev) => setMarca(ev.target.value)}
                     value={marca}
-                    errors={state.errors?.nombre}
+                    errors={state.errors?.marca}
                 />
                 <Input
                     name="modelo"
                     label="Modelo"
                     onChange={(ev) => setModelo(ev.target.value)}
                     value={modelo}
-                    errors={state.errors?.nombre}
+                    errors={state.errors?.modelo}
                 />
                 <Textarea
                     name="descripcion"
