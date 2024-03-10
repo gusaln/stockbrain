@@ -2,18 +2,19 @@ import { ResultSetHeader } from "mysql2";
 import { runQuery } from "../db";
 import { Pagination } from "./pagination";
 
-const AJUSTE_INVENTARIO_TIPO = {
+export const AJUSTE_INVENTARIO_TIPO = {
     ENTRADA: 1,
     SALIDA: 2,
 } as const;
 type AjusteInventarioTipoEnum = typeof AJUSTE_INVENTARIO_TIPO;
 type AjusteInventarioTipo = AjusteInventarioTipoEnum[keyof AjusteInventarioTipoEnum];
+const ReverseMap = new Map(Object.entries(AJUSTE_INVENTARIO_TIPO).map(([k, v]) => [v, k as keyof AjusteInventarioTipoEnum]))
 
 export interface AjusteInventario {
     id: number;
     operadorId: number;
     fecha: string;
-    almacenId: number;
+    // almacenId: number;
     productoId: number;
     tipo: AjusteInventarioTipo;
     cantidad: number;
@@ -56,6 +57,73 @@ export async function getAjustesInventario(search = undefined, pagination: Pagin
         data: data as AjusteInventario[],
         total: total as number
     }
+}
+
+export async function getAjustesInventarioWithRelations(search = undefined, pagination: Pagination = {}) {
+    const limit = pagination.limit ?? 10
+    const offset = ((pagination.page ?? 1) - 1) * limit
+    const [total, data] = await runQuery(async function (connection) {
+        const [countRes, countField] = await connection.query("SELECT COUNT(id) as total FROM ajustesInventario");
+
+        const [dataRes, dataField] = await connection.query(
+            `SELECT 
+                ajustesInventario.*,
+                usuarios.nombre as operador_nombre,
+                productos.marca as producto_marca,
+                productos.modelo as producto_modelo
+            FROM ajustesInventario 
+            LEFT JOIN usuarios ON ajustesInventario.operadorId = usuarios.id
+            LEFT JOIN productos ON ajustesInventario.productoId = productos.id
+            LIMIT ?, ?`,
+            [offset, limit]
+        );
+
+        return [countRes[0].total, dataRes]
+    });
+
+    return {
+        data: (data as Record<string, any>[]).map((ajuste) => ({
+            id: ajuste.id,
+            operadorId: ajuste.operadorId,
+            operador: {
+                id: ajuste.operadorId,
+                nombre: ajuste.operador_nombre
+            },
+            // almacen: {
+            //     id: ajuste.almacenId,
+            //     nombre: ajuste.almacen_nombre
+            // },
+            producto: {
+                id: ajuste.productoId,
+                marca: ajuste.producto_marca,
+                modelo: ajuste.producto_modelo,
+            },
+            fecha: ajuste.fecha,
+            almacenId: ajuste.almacenId,
+            productoId: ajuste.productoId,
+            tipo: ajuste.tipo,
+            tipoNombre: ReverseMap.get(ajuste.tipo),
+            cantidad: ajuste.cantidad,
+            motivo: ajuste.motivo,
+        })),
+        total: total as number
+    }
+}
+
+export type AjusteInventarioWithRelations = AjusteInventario & {
+    operador: {
+        id: number,
+        nombre: string
+    },
+    almacen: {
+        id: number,
+        nombre: string
+    },
+    producto: {
+        id: number,
+        marca: string,
+        modelo: string
+    },
 }
 
 export async function findAjusteInventario(id: number) {

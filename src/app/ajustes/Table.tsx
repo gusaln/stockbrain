@@ -1,10 +1,9 @@
 "use client";
 import { Loader } from "@/components/Loader";
 import { PaginationSteps, usePagination } from "@/components/pagination";
-import { AjusteInventario } from "@/lib/queries";
+import { AjusteInventarioWithRelations } from "@/lib/queries";
 import { PaginatedResponse } from "@/utils";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
 
 export function Table() {
     const { page, setPage, limit, setLimit } = usePagination();
@@ -12,7 +11,7 @@ export function Table() {
     const { data, error, isFetching, isError } = useQuery({
         queryKey: ["/ajustes/api", { page: page, limit: limit }],
         queryFn: async ({ queryKey }) => {
-            const queryParams = queryKey[1] as { page: number; limit: number; }; // Cast queryKey[1] to the correct type
+            const queryParams = queryKey[1] as { page: number; limit: number }; // Cast queryKey[1] to the correct type
 
             const url = new URLSearchParams({
                 page: queryParams.page.toString(),
@@ -20,14 +19,14 @@ export function Table() {
             });
 
             const res = await fetch(queryKey[0] + "?" + url.toString());
-            return (await res.json()) as PaginatedResponse<AjusteInventario>;
+            return (await res.json()) as PaginatedResponse<AjusteInventarioWithRelations>;
         },
         initialData: {
             data: [],
             page: 1,
             limit: 10,
             total: 0,
-        } as PaginatedResponse<AjusteInventario>,
+        },
     });
 
     if (data.data.length < 1 && isFetching) return <Loader />;
@@ -67,18 +66,20 @@ export function Table() {
             </thead>
 
             <tbody>
-                {data.data?.map((p) => {
+                {data.data?.map((ajuste) => {
                     return (
-                        <tr key={p.id}>
-                            <td>{p.operadorId}</td>
-                            <td>{p.fecha}</td>
-                            <td>{p.almacenId}</td>
-                            <td>{p.productoId}</td>
-                            <td>{p.tipo}</td>
-                            <td>{p.cantidad}</td>
-                            <td>{p.motivo}</td>
+                        <tr key={ajuste.id}>
+                            <td>{ajuste.operador.nombre}</td>
+                            <td>{ajuste.fecha}</td>
+                            <td>{ajuste.almacen.nombre}</td>
+                            <td>{ajuste.producto.marca} - {ajuste.producto.modelo}</td>
+                            <td>{ajuste.tipo}</td>
+                            <td>{ajuste.cantidad}</td>
+                            <td>{ajuste.motivo}</td>
                             <th>
-                                <button className="btn btn-ghost btn-sm">editar</button>
+                                <a href={`/ajustes/${ajuste.id}/editar`} className="btn btn-ghost btn-sm">
+                                    editar
+                                </a>
                             </th>
                         </tr>
                     );
@@ -87,7 +88,7 @@ export function Table() {
 
             <tfoot>
                 <tr>
-                    <td colSpan={3}>
+                    <td colSpan="8">
                         <PaginationSteps page={page} total={data.total} limit={limit} onPageChange={setPage} />
                     </td>
                 </tr>
