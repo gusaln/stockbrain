@@ -29,7 +29,7 @@ export default function Select<T extends { id: number } = unknown>(props: Select
     return (
         <>
             <Listbox name={props.name} value={props?.selected.id} onChange={props?.onSelectChanged}>
-                <Listbox.Label className="form-control w-full max-w-xs relative">
+                <Listbox.Label className="form-control w-full relative">
                     <div className="label">{label ? <span className="label-text">{label}</span> : null}</div>
 
                     <Listbox.Button className="input input-bordered">

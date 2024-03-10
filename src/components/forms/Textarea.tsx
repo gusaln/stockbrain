@@ -19,10 +19,10 @@ export default function Textarea(props: TextareaProps) {
     const error = getError(errors);
 
     return (
-        <label className="form-control w-full max-w-xs">
+        <label className="form-control w-full">
             <div className="label">{label ? <span className="label-text">{label}</span> : null}</div>
 
-            <textarea {...rest} className="input input-bordered w-full max-w-xs" />
+            <textarea {...rest} className="input input-bordered w-full" />
 
             <div className="label">{error ? <span className="label-text-alt text-red-400">{error}</span> : null}</div>
         </label>
