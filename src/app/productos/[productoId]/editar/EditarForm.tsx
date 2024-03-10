@@ -2,11 +2,12 @@
 
 import Input from "@/components/forms/Input";
 import Textarea from "@/components/forms/Textarea";
-import { Producto } from "@/lib/queries";
-import { useEffect, useState } from "react";
+import { Categoria, Producto } from "@/lib/queries";
+import { useEffect, useMemo, useState } from "react";
 import { useFormState } from "react-dom";
 import { ToastContainer, toast } from "react-toastify";
 import { bindProductoId } from "./page";
+import Select from "@/components/forms/Select";
 
 const initialState = {
     message: "",
@@ -15,17 +16,22 @@ const initialState = {
 
 interface Props {
     producto: Producto;
+    categorias: Categoria[];
     onSubmit: ReturnType<typeof bindProductoId>;
 }
 
-export default function Form({ producto, onSubmit }: Props) {
+export default function Form({ producto, categorias, onSubmit }: Props) {
     const [state, formAction] = useFormState(onSubmit, initialState);
 
     const [categoriaId, setCategoriaId] = useState(producto.categoriaId);
-    const [marca, setMarca ] = useState(producto.marca);
-    const [modelo, setModelo ] = useState(producto.modelo);
+    const [marca, setMarca] = useState(producto.marca);
+    const [modelo, setModelo] = useState(producto.modelo);
     const [descripcion, setDescripcion] = useState(producto.descripcion);
-    const [imagen, setImagen ] = useState(producto.imagen);
+    const [imagen, setImagen] = useState(producto.imagen);
+
+    const categoria = useMemo(() => categorias.find((c) => {
+        return c.id == categoriaId ?? {id:0};
+    }) , [producto, categoriaId]);
 
     useEffect(() => {
         if (state.message) {
@@ -34,38 +40,43 @@ export default function Form({ producto, onSubmit }: Props) {
     }, [state]);
 
     return (
-        <form action={formAction} method="post">
+        <form id="form-data" action={formAction} method="post">
             <ToastContainer />
 
             <div className="card-body">
                 <div className="card-title">
-                    Producto <em>{producto.categoriaId}</em>
+                    Producto <em>{producto.marca} - {producto.modelo}</em>
                 </div>
 
                 <p aria-live="polite" className="sr-only">
                     {state?.message}
                 </p>
 
-                <Input
+                <Select
                     name="categoriaId"
-                    label="Id de categoría"
-                    onChange={(ev) => setCategoriaId(ev.target.value)}
+                    label="Categoría"
+                    selected={categoria}
+                    onSelectChanged={(v) => setCategoriaId(v)}
+                    // onChange={(ev) => setCategoriaId(ev.target.value)}
                     value={categoriaId}
-                    errors={state.errors?.nombre}
+                    errors={state.errors?.categoriaId}
+                    options={categorias}
+                    nameElement={(categoria) => categoria.nombre}
+                    optionElement={(categoria, index) => categoria.nombre}
                 />
                 <Input
                     name="marca"
                     label="Marca"
                     onChange={(ev) => setMarca(ev.target.value)}
                     value={marca}
-                    errors={state.errors?.nombre}
+                    errors={state.errors?.marca}
                 />
                 <Input
                     name="modelo"
                     label="Modelo"
                     onChange={(ev) => setModelo(ev.target.value)}
                     value={modelo}
-                    errors={state.errors?.nombre}
+                    errors={state.errors?.modelo}
                 />
                 <Textarea
                     name="descripcion"

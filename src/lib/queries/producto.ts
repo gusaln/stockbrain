@@ -60,18 +60,21 @@ export async function getProductosWithCategorias(search = undefined, pagination:
         const [countRes, countField] = await connection.query("SELECT COUNT(id) as total FROM productos");
 
         const [dataRes, dataField] = await connection.query(
-            `SELECT productos.*, categorias.nombre as categoria_nombre
+            `SELECT productos.id, productos.*, categorias.nombre as categoria_nombre
             FROM productos 
             LEFT JOIN categorias ON productos.categoriaId = categorias.id
             LIMIT ?, ?`,
             [offset, limit]
         );
 
+        console.log(dataRes)
+
         return [countRes[0].total, dataRes]
     });
 
     return {
         data: (data as (Producto & {categoria_nombre: string})[]).map((p) => ({
+            id: p.id,
             categoriaId: p.categoriaId,
             categoria: {
                 id: p.categoriaId,

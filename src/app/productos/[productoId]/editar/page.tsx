@@ -1,5 +1,5 @@
 import ResponsiveLayout, { LinkAction } from "@/components/layouts/ResponsiveLayout";
-import { findProducto } from "@/lib/queries";
+import { findCategoria, findProducto, getCategorias } from "@/lib/queries";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import EditarForm from "./EditarForm";
@@ -15,10 +15,12 @@ export function bindProductoId(productoId: number) {
 
 export default async function Page({ params }: { params: { productoId: number } }) {
     const producto = await findProducto(params.productoId);
-
+    
     if (!producto) {
         return notFound();
     }
+    
+    const categorias = (await getCategorias(undefined, {page: 1, limit: 100})).data
 
     const editarProductoWithId = bindProductoId(producto.id);
 
@@ -31,7 +33,7 @@ export default async function Page({ params }: { params: { productoId: number } 
         >
             <section className="w-full justify-center flex">
                 <div className="card w-fit shadow-lg">
-                    <EditarForm producto={producto} onSubmit={editarProductoWithId} />
+                    <EditarForm producto={producto} categorias={categorias} onSubmit={editarProductoWithId} />
                 </div>
             </section>
         </ResponsiveLayout>

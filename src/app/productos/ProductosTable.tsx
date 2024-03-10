@@ -71,7 +71,7 @@ export function ProductosTable(){
                             <td>{p.descripcion}</td>
                             <td>{p.imagen ?? '-'}</td>
                             <th>
-                                <button className="btn btn-ghost btn-sm">editar</button>
+                                <a href={`/productos/${p.id}/editar`} className="btn btn-ghost btn-sm">editar</a>
                             </th>
                         </tr>
                     );
