@@ -15,18 +15,18 @@ export interface Producto {
 }
 
 const ESTADO = {
-    bueno: 1,
-    revision: 2,
-    defectuoso: 3,
+    BUENO: 1,
+    REVISION: 2,
+    DEFECTUOSO: 3,
 } as const;
-type EstadoEnum = typeof ESTADO;
-type Estado = EstadoEnum[keyof EstadoEnum];
+type ProductoEstadoEnum = typeof ESTADO;
+export type ProductoEstado = ProductoEstadoEnum[keyof ProductoEstadoEnum];
 
 export interface ProductoStock {
     id: number;
     productoId: number;
     identificador: string;
-    estado: Estado;
+    estado: ProductoEstado;
     cantidad: number;
 }
 
@@ -84,4 +84,37 @@ export async function getProductosWithCategorias(search = undefined, pagination:
         })),
         total: total as number
     }
+}
+
+export async function findProducto(id: number) {
+    const [data, dataField] = await runQuery(async function (connection) {
+        const [dataRes, dataField] = await connection.query(
+            "SELECT * FROM productos WHERE id = ?",
+            [id]
+        );
+
+        return [dataRes[0], dataField]
+    });
+
+    return data as Producto | null;
+}
+
+export async function updateProducto(id: number, producto: Exclude<Producto, "id">) {
+    const [data, dataField] = await runQuery(async function (connection) {
+        const [dataRes, dataField] = await connection.query(
+            `UPDATE productos 
+            SET 
+                categoriaId = ?, 
+                marca = ?, 
+                modelo = ?, 
+                descripcion = ?, 
+                imagen = ?
+            WHERE id = ?`,
+            [producto.categoriaId, producto.marca, producto.modelo, producto.descripcion, producto.imagen, id]
+        );
+
+        return [dataRes[0], dataField]
+    });
+
+    return data as Producto | null;
 }

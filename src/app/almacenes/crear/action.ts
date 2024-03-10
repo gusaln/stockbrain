@@ -4,8 +4,8 @@ import { z } from "@/validation";
 
 
 const schema = z.object({
-    nombre: z.string().max(64),
-    ubicacion: z.string().max(64),
+    nombre: z.string().trim().max(64),
+    ubicacion: z.string().trim().max(64),
 });
 
 export async function crearAlmacen(prevState: any, formData: FormData) {

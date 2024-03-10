@@ -4,12 +4,12 @@ import { z } from "@/validation";
 
 
 const schema = z.object({
-    fecha: z.string().max(64),
-    almacenId: z.number().max(64),
-    productoId: z.number().max(64),
-    tipo: z.number().max(1),
+    fecha: z.string().trim().max(64),
+    almacenId: z.number(),
+    productoId: z.number(),
+    tipo: z.number(),
     cantidad: z.number(),
-    motivo: z.string().max(300),
+    motivo: z.string().trim().max(300),
 });
 
 export async function crearAjuste(prevState: any, formData: FormData) {
