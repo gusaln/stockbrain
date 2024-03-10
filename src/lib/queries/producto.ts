@@ -104,6 +104,7 @@ export async function updateProducto(id: number, producto: Exclude<Producto, "id
         const [dataRes, dataField] = await connection.query(
             `UPDATE productos 
             SET 
+
                 categoriaId = ?, 
                 marca = ?, 
                 modelo = ?, 
