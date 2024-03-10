@@ -62,16 +62,16 @@ export function ProductosTable(){
             </thead>
 
             <tbody>
-                {data.data?.map((p) =>{
+                {data.data?.map((producto) =>{
                     return(
-                        <tr key={p.id}>
-                            <td>{p.categoria.nombre}</td>
-                            <th>{p.marca}</th>
-                            <th>{p.modelo}</th>
-                            <td>{p.descripcion}</td>
-                            <td>{p.imagen ?? '-'}</td>
+                        <tr key={producto.id}>
+                            <td>{producto.categoria.nombre}</td>
+                            <th>{producto.marca}</th>
+                            <th>{producto.modelo}</th>
+                            <td>{producto.descripcion}</td>
+                            <td>{producto.imagen ?? '-'}</td>
                             <th>
-                                <button className="btn btn-ghost btn-sm">editar</button>
+                            <a href={`/productos/${producto.id}/editar`} className="btn btn-ghost btn-sm">editar</a>
                             </th>
                         </tr>
                     );

@@ -37,7 +37,7 @@ export async function editarProducto(productoId: number, prevState: any, formDat
         validatedFields.data,
     )
 
-    redirect("/productos"+new URLSearchParams({"message[success]": "Producto editado con éxito"}));
+    redirect("/productos?"+new URLSearchParams({"message[success]": "Producto editado con éxito"}));
 
     return {
         message: "Success",
