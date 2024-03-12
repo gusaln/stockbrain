@@ -115,10 +115,10 @@ export type AjusteInventarioWithRelations = AjusteInventario & {
         id: number,
         nombre: string
     },
-    almacen: {
-        id: number,
-        nombre: string
-    },
+    // almacen: {
+    //     id: number,
+    //     nombre: string
+    // },
     producto: {
         id: number,
         marca: string,

@@ -29,10 +29,6 @@ export default function Form({ producto, categorias, onSubmit }: Props) {
     const [descripcion, setDescripcion] = useState(producto.descripcion);
     const [imagen, setImagen] = useState(producto.imagen);
 
-    const categoria = useMemo(() => categorias.find((c) => {
-        return c.id == categoriaId ?? {id:0};
-    }) , [producto, categoriaId]);
-
     useEffect(() => {
         if (state.message) {
             toast.error(state.message);
@@ -55,14 +51,15 @@ export default function Form({ producto, categorias, onSubmit }: Props) {
                 <Select
                     name="categoriaId"
                     label="Categoría"
-                    selected={categoria}
-                    onSelectChanged={(v) => setCategoriaId(v)}
+                    selected={categoriaId}
+                    onSelectChanged={(id) => setCategoriaId(id)}
                     // onChange={(ev) => setCategoriaId(ev.target.value)}
                     value={categoriaId}
                     errors={state.errors?.categoriaId}
                     options={categorias}
-                    nameElement={(categoria) => categoria.nombre}
-                    optionElement={(categoria, index) => categoria.nombre}
+                    text={(categoria) => categoria.nombre}
+                    option={(categoria, index) => categoria.nombre}
+                    optionValue={(c) => c.id}
                 />
                 <Input
                     name="marca"
