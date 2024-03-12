@@ -14,12 +14,12 @@ export interface Producto {
     imagen: string | null;
 }
 
-const ESTADO = {
+export const PRODUCTO_ESTADO = {
     BUENO: 1,
     REVISION: 2,
     DEFECTUOSO: 3,
 } as const;
-type ProductoEstadoEnum = typeof ESTADO;
+type ProductoEstadoEnum = typeof PRODUCTO_ESTADO;
 export type ProductoEstado = ProductoEstadoEnum[keyof ProductoEstadoEnum];
 
 export interface ProductoStock {
@@ -121,4 +121,21 @@ export async function updateProducto(id: number, producto: Exclude<Producto, "id
     });
 
     return data as Producto | null;
+}
+
+export async function getProductoStocks(productoId: number) {
+    const [data, dataField] = await runQuery(async function (connection) {
+        const [dataRes, dataField] = await connection.query(
+            "SELECT * FROM productoStocks WHERE productoId = ?",
+            [productoId]
+        );
+
+        return [dataRes as ProductoStock[], dataField]
+    }) as [ProductoStock[], unknown];
+
+    return {
+        [PRODUCTO_ESTADO.BUENO]: data.find(s => s.estado == PRODUCTO_ESTADO.BUENO)?.cantidad ?? 0,
+        [PRODUCTO_ESTADO.REVISION]: data.find(s => s.estado == PRODUCTO_ESTADO.REVISION)?.cantidad ?? 0,
+        [PRODUCTO_ESTADO.DEFECTUOSO]: data.find(s => s.estado == PRODUCTO_ESTADO.DEFECTUOSO)?.cantidad ?? 0,
+    };
 }

@@ -1,4 +1,4 @@
-DROP DATABASE IF EXISTS `stockbrain`;
+-- DROP DATABASE IF EXISTS `stockbrain`;
 CREATE DATABASE IF NOT EXISTS `stockbrain`;
 
 -- Referencia de tamaño
@@ -27,16 +27,7 @@ CREATE TABLE
         `email` VARCHAR(128),
         `direccion` VARCHAR(128)
     );
-
--- DROP TABLE IF EXISTS `almacenes`;
-
--- CREATE TABLE
---     `almacenes` (
---         `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
---         `nombre` VARCHAR(64),
---         `ubicacion` VARCHAR(64)
---     );
-
+    
 DROP TABLE IF EXISTS `usuarios`;
 
 CREATE TABLE
