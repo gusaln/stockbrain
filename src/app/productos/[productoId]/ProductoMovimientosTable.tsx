@@ -1,36 +1,38 @@
 "use client";
+
+import { MovimientoOrigen } from "@/app/movimientos/Table";
 import { Loader } from "@/components/Loader";
-import { PaginationSteps, usePagination } from "@/components/pagination";
-import { Categoria, Producto } from "@/lib/queries";
+import { usePagination, PaginationSteps } from "@/components/pagination";
+import { MovimientoInventario } from "@/lib/queries/shared";
 import { PaginatedResponse } from "@/utils";
 import { useQuery } from "@tanstack/react-query";
 
-export function ProductosTable(){
+export function ProductoMovimientosTable({ productoId }: { productoId: number }) {
     const { page, setPage, limit, setLimit } = usePagination();
 
-    const {data, error, isLoading, isError } = useQuery({
-        queryKey: ["/productos/api", { page: page, limit: limit }],
+    const { data, error, isFetching, isError } = useQuery({
+        queryKey: [`/productos/api/${productoId}/movimientos`, { page: page, limit: limit }] as const,
         queryFn: async ({ queryKey }) => {
-            const queryParams = queryKey[1] as {page: number, limit: number};
+            const queryParams = queryKey[1]; // Cast queryKey[1] to the correct type
+
             const url = new URLSearchParams({
                 page: queryParams.page.toString(),
                 limit: queryParams.limit.toString(),
             });
 
             const res = await fetch(queryKey[0] + "?" + url.toString());
-            
-            return (await res.json()) as PaginatedResponse<Producto & {categoria: Pick<Categoria, "nombre">}>;
+            return (await res.json()) as PaginatedResponse<MovimientoInventario>;
         },
         initialData: {
             data: [],
-            page: 1, 
-            limit: 10, 
+            page: 1,
+            limit: 10,
             total: 0,
-        },
+        } as PaginatedResponse<MovimientoInventario>,
     });
 
-    if(isLoading) return <Loader />;
-    if(isError)
+    if (data.data.length < 1 && isFetching) return <Loader />;
+    if (isError)
         return (
             <div role="alert" className="alert alert-error">
                 <svg
@@ -49,31 +51,32 @@ export function ProductosTable(){
                 <span>{error.message}</span>
             </div>
         );
+
     return (
         <table className="table table-sm">
             <thead>
                 <tr>
-                    <th>Categoria</th>
-                    <th>Marca</th>
-                    <th>Modelo</th>
-                    <th>Descripción</th>
-                    <th>Imagen</th>
+                    <th>Operador</th>
+                    <th>Fecha</th>
+                    <th>Estado</th>
+                    <th>Tipo</th>
+                    <th>Cantidad</th>
+                    <th></th>
                 </tr>
             </thead>
 
             <tbody>
-                {data.data?.map((p) =>{
-                    return(
-                        <tr key={p.id}>
-                            <td>{p.categoria.nombre}</td>
-                            <th>{p.marca}</th>
-                            <th>{p.modelo}</th>
-                            <td>{p.descripcion}</td>
-                            <td>{p.imagen ?? '-'}</td>
-                            <th>
-                                <a href={`/productos/${p.id}`} className="btn btn-ghost btn-sm">detalles</a>
-                                <a href={`/productos/${p.id}/editar`} className="btn btn-ghost btn-sm">editar</a>
-                            </th>
+                {data.data?.map((movimiento) => {
+                    return (
+                        <tr key={movimiento.id}>
+                            <td>{movimiento.operadorId}</td>
+                            <td>{movimiento.fecha}</td>
+                            <td>
+                                <MovimientoOrigen movimiento={movimiento} />
+                            </td>
+                            <td>{movimiento.tipo}</td>
+                            <td>{movimiento.cantidad}</td>
+                            <th></th>
                         </tr>
                     );
                 })}
@@ -81,7 +84,7 @@ export function ProductosTable(){
 
             <tfoot>
                 <tr>
-                    <td colSpan={6}>
+                    <td colSpan={3}>
                         <PaginationSteps page={page} total={data.total} limit={limit} onPageChange={setPage} />
                     </td>
                 </tr>

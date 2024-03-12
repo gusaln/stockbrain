@@ -49,7 +49,6 @@ export async function getProductos(search = undefined, pagination: Pagination = 
             [offset, limit]
         );
 
-        console.log(dataRes)
 
         return [countRes[0].total, dataRes]
     });
