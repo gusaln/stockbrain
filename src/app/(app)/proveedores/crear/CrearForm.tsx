@@ -4,10 +4,11 @@ import { useState } from "react";
 import { useFormState } from "react-dom";
 import { crearProveedor } from "./action";
 import Input from "@/components/forms/Input";
+import { FormError } from "@/components/forms/FormError";
 
 const initialState = {
     message: "",
-    errors: null
+    errors: null,
 };
 
 interface Props {
@@ -22,15 +23,13 @@ export default function Form(props: Props) {
             <div className="card-body">
                 <div className="card-title">Indique los datos del nuevo proveedor</div>
 
-                <p aria-live="polite" className="sr-only">
-                    {state?.message}
-                </p>
+                <FormError message={state.message} />
 
                 <Input name="nombre" label="Nombre" errors={state.errors?.nombre} />
-                <Input name="contacto" label="Persona de contacto"  errors={state.errors?.contacto}/>
-                <Input name="telefono" label="Teléfono" type="tel" errors={state.errors?.telefono}/>
-                <Input name="email" label="Email" type="email" errors={state.errors?.email}/>
-                <Input name="direccion" label="Dirección" type="text" errors={state.errors?.direccion}/>
+                <Input name="contacto" label="Persona de contacto" errors={state.errors?.contacto} />
+                <Input name="telefono" label="Teléfono" type="tel" errors={state.errors?.telefono} />
+                <Input name="email" label="Email" type="email" errors={state.errors?.email} />
+                <Input name="direccion" label="Dirección" type="text" errors={state.errors?.direccion} />
 
                 <div className="card-actions justify-end">
                     <button type="submit" className="btn btn-primary">

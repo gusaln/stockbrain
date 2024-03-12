@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { FormError } from "@/components/forms/FormError";
+import Input from "@/components/forms/Input";
 import { useFormState } from "react-dom";
 import { crearCategoria } from "./action";
-import Input from "@/components/forms/Input";
 
 const initialState = {
     message: "",
@@ -22,9 +22,7 @@ export default function Form(props: Props) {
             <div className="card-body">
                 <div className="card-title">Indique los datos de la nueva categoría</div>
 
-                <p aria-live="polite" className="sr-only">
-                    {state?.message}
-                </p>
+                <FormError message={state.message}/>
 
                 <Input name="nombre" label="Nombre" errors={state.errors?.nombre} />
                 <Input name="descripcion" label="Descripción" errors={state.errors?.descripcion}/>

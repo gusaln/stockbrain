@@ -5,6 +5,7 @@ import { login } from "../actions";
 import { useEffect } from "react";
 import { BellAlertIcon } from "@heroicons/react/16/solid";
 import { authenticate } from "@/lib/auth";
+import { FormError } from "@/components/forms/FormError";
 
 const initialState = {
     message: "",
@@ -24,15 +25,8 @@ export function LoginForm(props: Props) {
             <div className="card-body w-full">
                 <div className="card-title">Indique sus credenciales</div>
 
-                <p aria-live="polite" className="sr-only">
-                    {state?.message}
-                </p>
-                {state?.message != "" ? (
-                    <div role="alert" className="alert alert-error mb-12">
-                        <BellAlertIcon width="16" />
-                        <span>{state?.message}</span>
-                    </div>
-                ) : undefined}
+                <FormError message={state.message}/>
+
                 <Input type="email" name="email" label="Email" errors={state.errors?.email} />
                 <Input type="password" name="password" label="Password" errors={state.errors?.email} />
 

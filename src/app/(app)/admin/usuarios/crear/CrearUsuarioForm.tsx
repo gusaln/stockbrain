@@ -4,6 +4,7 @@ import Input from "@/components/forms/Input";
 import { useState } from "react";
 import { useFormState } from "react-dom";
 import { crearUsuario } from "./action";
+import { FormError } from "@/components/forms/FormError";
 
 const initialState = {
     message: "",
@@ -24,9 +25,7 @@ export function CrearUsuarioForm(props: Props) {
             <div className="card-body">
                 <div className="card-title">Indique los datos del nuevo usuario</div>
 
-                <p aria-live="polite" className="sr-only">
-                    {state?.message}
-                </p>
+                <FormError message={state.message}/>
 
                 <Input name="nombre" label="Nombre" />
                 <Input name="email" label="Email" type="email" />

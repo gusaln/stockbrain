@@ -6,6 +6,7 @@ import { crearProducto } from "./action";
 import Input from "@/components/forms/Input";
 import Select from "@/components/forms/Select";
 import { Categoria } from "@/lib/queries/shared";
+import { FormError } from "@/components/forms/FormError";
 
 const initialState = {
     message: "", 
@@ -27,9 +28,9 @@ export default function Form({categorias, onSubmit}: Props) {
         <form action={formAction} method="post">
             <div className="card-body">
                 <div className="card-title">Indique los datos del producto</div>
-                <p aria-live="polite" className="sr-only">
-                    {state?.message}
-                </p>
+                
+                <FormError message={state.message}/>
+
                 <Select
                     name="categoriaId"
                     label="Categoría"

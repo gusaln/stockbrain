@@ -1,14 +1,14 @@
 "use client";
 
+import { FormError } from "@/components/forms/FormError";
 import Input from "@/components/forms/Input";
+import Select from "@/components/forms/Select";
 import Textarea from "@/components/forms/Textarea";
-import { AjusteInventario } from "@/lib/queries";
-import { Almacen } from "@/lib/queries";
 import { useEffect, useState } from "react";
 import { useFormState } from "react-dom";
 import { ToastContainer, toast } from "react-toastify";
 import { bindAjusteId } from "./page";
-import Select from "@/components/forms/Select";
+import { AjusteInventario, Almacen } from "@/lib/queries/shared";
 
 const initialState = {
     message: "",
@@ -17,7 +17,7 @@ const initialState = {
 
 interface Props {
     ajuste: AjusteInventario;
-    almacenes: Almacen;
+    almacenes: Almacen[];
     onSubmit: ReturnType<typeof bindAjusteId>;
 }
 
@@ -46,9 +46,7 @@ export default function Form({ ajuste, almacenes, onSubmit }: Props) {
                     Ajuste <em>{ajuste.id}</em>
                 </div>
 
-                <p aria-live="polite" className="sr-only">
-                    {state?.message}
-                </p>
+                <FormError message={state.message} />
 
                 <Input
                     type="date"

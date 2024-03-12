@@ -6,6 +6,7 @@ import { Producto } from "@/lib/queries/shared";
 import { useState } from "react";
 import { useFormState } from "react-dom";
 import { crearAjuste } from "./action";
+import { FormError } from "@/components/forms/FormError";
 // import { AJUSTE_INVENTARIO_TIPO } from "@/lib/queries";
 
 const initialState = {
@@ -28,9 +29,7 @@ export default function Form(props: Props) {
             <div className="card-body w-full">
                 <div className="card-title">Indique los datos del nuevo ajuste de inventario</div>
 
-                <p aria-live="polite" className="sr-only">
-                    {state?.message}
-                </p>
+                <FormError message={state.message}/>
 
                 <Input type="date" name="fecha" label="Fecha" errors={state.errors?.fecha} />
                 {/* <Input name="almacen" label="Almacén" errors={state.errors?.almacenId} /> */}

@@ -2,11 +2,12 @@
 
 import Input from "@/components/forms/Input";
 import Textarea from "@/components/forms/Textarea";
-import { Categoria } from "@/lib/queries";
 import { useEffect, useState } from "react";
 import { useFormState } from "react-dom";
 import { ToastContainer, toast } from "react-toastify";
 import { bindCategoriaId } from "./page";
+import { FormError } from "@/components/forms/FormError";
+import { Categoria } from "@/lib/queries/shared";
 
 const initialState = {
     message: "",
@@ -39,9 +40,7 @@ export default function Form({ categoria, onSubmit }: Props) {
                     Categoría <em>{categoria.nombre}</em>
                 </div>
 
-                <p aria-live="polite" className="sr-only">
-                    {state?.message}
-                </p>
+                <FormError message={state.message}/>
 
                 <Input
                     name="nombre"
