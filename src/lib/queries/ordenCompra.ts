@@ -1,7 +1,8 @@
 import { ResultSetHeader } from "mysql2";
 import { runQuery } from "../db";
 import { Pagination } from "./pagination";
-import { OrdenCompra } from "./shared";
+import { MOVIMIENTO_INVENTARIO_TIPO, OrdenCompra, PRODUCTO_ESTADO } from "./shared";
+import { formatForSql } from "./utils";
 
 export interface NewOrdenCompraItem {
     productoId: number;
@@ -11,41 +12,78 @@ export interface NewOrdenCompraItem {
 
 export async function createOrdenCompra(
     proveedorId: number,
-    fecha: string,
+    fecha: Date,
     operadorId: number,
     items: NewOrdenCompraItem[],
 ) {
-    const [result] = await runQuery(async function (connection) {
+    const fechaSql = formatForSql(fecha);
+
+    return await runQuery(async function (connection) {
         await connection.beginTransaction();
 
-        const [result] = await connection.query(
+        const [insertOrdenResult] = await connection.query(
             "INSERT INTO ordenesCompra (proveedorId, fecha, operadorId) VALUES (?, ?, ?)",
-            [proveedorId, fecha, operadorId],
+            [proveedorId, fechaSql, operadorId],
         );
 
-        const ordenId = result.insertId;
-        const prepared = await connection.prepare(
+        const ordenId = (insertOrdenResult as ResultSetHeader).insertId;
+        const insertItemsSql = await connection.prepare(
             `INSERT INTO ordenesCompraItems (ordenId, productoId, cantidad, precioUnitario, total) VALUES (?, ?, ?, ?, ?)`,
         );
 
+        const movimientosSql = await connection.prepare(
+            `INSERT INTO movimientosInventario 
+                (   
+                    fecha,
+                    operadorId,
+                    productoId,
+                    estadoDestino,
+                    tipo,
+                    ordenCompraId,
+                    cantidad
+                ) 
+            VALUES 
+                (
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?
+                )`,
+        );
+
         await Promise.all(
-            items.map((item) =>
-                prepared.execute([
-                    ordenId,
-                    item.productoId,
-                    item.cantidad,
-                    item.precioUnitario,
-                    item.cantidad * item.precioUnitario,
-                ]),
-            ),
+            items
+                .map((item) =>
+                    insertItemsSql.execute([
+                        ordenId,
+                        item.productoId,
+                        item.cantidad,
+                        item.precioUnitario,
+                        item.cantidad * item.precioUnitario,
+                    ]),
+                )
+                .concat(
+                    items.map((item) =>
+                        movimientosSql.execute([
+                            fechaSql,
+                            operadorId,
+                            item.productoId,
+                            PRODUCTO_ESTADO.BUENO,
+                            MOVIMIENTO_INVENTARIO_TIPO.ENTRADA,
+                            ordenId,
+                            item.cantidad,
+                        ]),
+                    ),
+                ),
         );
 
         await connection.commit();
 
         return ordenId;
     });
-
-    return (result as ResultSetHeader).insertId;
 }
 
 export async function existsOrdenCompra(ordenCompraId: number) {
@@ -69,6 +107,48 @@ export async function getOrdenesCompra(search = undefined, pagination: Paginatio
 
     return {
         data: data as OrdenCompra[],
+        total: total as number,
+    };
+}
+
+export async function getOrdenesCompraWithRelations(search = undefined, pagination: Pagination = {}) {
+    const limit = pagination.limit ?? 10;
+    const offset = ((pagination.page ?? 1) - 1) * limit;
+    const [total, data] = await runQuery(async function (connection) {
+        const [countRes, countField] = await connection.query("SELECT COUNT(id) as total FROM ordenesCompra");
+
+        const [dataRes, dataField] = await connection.query(
+            `SELECT 
+                ordenesCompra.* ,
+                usuarios.nombre as operador_nombre,
+                proveedores.nombre as proveedor_nombre
+            FROM ordenesCompra 
+            JOIN proveedores ON ordenesCompra.proveedorId = proveedores.id
+            JOIN usuarios ON ordenesCompra.operadorId = usuarios.id
+            ORDER BY fecha DESC
+            LIMIT ?, ?
+        `,
+            [offset, limit],
+        );
+
+        return [countRes[0].total, dataRes];
+    });
+
+    return {
+        data: (data as Record<string, any>[]).map((movimiento) => ({
+            id: movimiento.id,
+            operadorId: movimiento.operadorId,
+            operador: {
+                id: movimiento.operadorId,
+                nombre: movimiento.operador_nombre,
+            },
+            proveedorId: movimiento.proveedorId,
+            proveedor: {
+                id: movimiento.proveedorId,
+                nombre: movimiento.proveedor_nombre,
+            },
+            fecha: movimiento.fecha,
+        })),
         total: total as number,
     };
 }

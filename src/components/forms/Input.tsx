@@ -1,6 +1,6 @@
-import { InputHTMLAttributes } from "react";
+import { ChangeEvent, InputHTMLAttributes } from "react";
 
-interface InputProps extends InputHTMLAttributes<string> {
+interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
     label?: string;
     errors?: string | string[] | null;
 }
@@ -19,8 +19,8 @@ export default function Input(props: InputProps) {
     const error = getError(errors);
 
     return (
-        <label className="form-control w-full">
-            <div className="label">{label ? <span className="label-text">{label}</span> : null}</div>
+        <label className={"form-control w-full " + (error ? "text-error" : "")}>
+            <div className="label">{label ? <span className="label-text text-inherit">{label}</span> : null}</div>
 
             <input {...rest} className="input input-bordered w-full" />
 

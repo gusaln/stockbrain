@@ -35,6 +35,15 @@ export async function authenticate() {
     };
 }
 
+export async function authenticateOrFail() {
+    const user = await authenticate();
+    if (!user) {
+        throw new Error("Not authenticated");
+    }
+
+    return user;
+}
+
 export async function signIn(credentials: Credentials) {
     const user = await usuarioExiste(credentials.email, credentials.password);
 
