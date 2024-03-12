@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useFormState } from "react-dom";
 import { crearProducto } from "./action";
 import Input from "@/components/forms/Input";
+import Select from "@/components/forms/Select";
+import { Categoria } from "@/lib/queries/shared";
 
 const initialState = {
     message: "", 
@@ -11,11 +13,15 @@ const initialState = {
 };
 
 interface Props {
+    categorias: Categoria[];
     onSubmit: typeof crearProducto;
 }
 
-export default function Form(props: Props) {
-    const [state, formAction] = useFormState(props.onSubmit, initialState);
+export default function Form({categorias, onSubmit}: Props) {
+    const [state, formAction] = useFormState(onSubmit, initialState);
+
+    const [categoriaId, setCategoriaId] = useState(undefined as number | undefined);
+
 
     return (
         <form action={formAction} method="post">
@@ -24,7 +30,19 @@ export default function Form(props: Props) {
                 <p aria-live="polite" className="sr-only">
                     {state?.message}
                 </p>
-                <Input name="categoriaId" label="Id de la Categoria" errors={state.errors?.categoriaId} />
+                <Select
+                    name="categoriaId"
+                    label="Categoría"
+                    selected={categoriaId}
+                    onSelectChanged={(id) => setCategoriaId(id)}
+                    // onChange={(ev) => setCategoriaId(ev.target.value)}
+                    value={categoriaId}
+                    errors={state.errors?.categoriaId}
+                    options={categorias}
+                    text={(categoria) => categoria.nombre}
+                    option={(categoria, index) => categoria.nombre}
+                    optionValue={(c) => c.id}
+                />
                 <Input name="marca" label="Marca" errors={state.errors?.marca}/>
                 <Input name="modelo" label="Modelo" errors={state.errors?.modelo}/>
                 <Input name="descripcion" label="Descripción" errors={state.errors?.descripcion}/>

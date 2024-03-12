@@ -1,10 +1,27 @@
 "use client";
 import { Loader } from "@/components/Loader";
 import { PaginationSteps, usePagination } from "@/components/pagination";
-import { MovimientoInventario } from "@/lib/queries";
+import { MovimientoInventario, getProductoEstadoLabel } from "@/lib/queries/shared";
 import { PaginatedResponse } from "@/utils";
+import { ArrowRightCircleIcon } from "@heroicons/react/16/solid";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+
+export function MovimientoOrigen({ movimiento }: { movimiento: MovimientoInventario }) {
+    if (movimiento.estadoOrigen) {
+        return (
+            <>
+                <span>{getProductoEstadoLabel(movimiento.estadoOrigen)} </span>
+                <span>
+                    {" "}
+                    <ArrowRightCircleIcon width="16" />{" "}
+                </span>
+                <span>{getProductoEstadoLabel(movimiento.estadoDestino)} </span>
+            </>
+        );
+    }
+
+    return <span>{getProductoEstadoLabel(movimiento.estadoDestino)} </span>;
+}
 
 export function Table() {
     const { page, setPage, limit, setLimit } = usePagination();
@@ -12,7 +29,7 @@ export function Table() {
     const { data, error, isFetching, isError } = useQuery({
         queryKey: ["/movimientos/api", { page: page, limit: limit }],
         queryFn: async ({ queryKey }) => {
-            const queryParams = queryKey[1] as { page: number; limit: number; }; // Cast queryKey[1] to the correct type
+            const queryParams = queryKey[1] as { page: number; limit: number }; // Cast queryKey[1] to the correct type
 
             const url = new URLSearchParams({
                 page: queryParams.page.toString(),
@@ -58,8 +75,7 @@ export function Table() {
                     <th>Operador</th>
                     <th>Fecha</th>
                     <th>Producto</th>
-                    <th>Origen</th>
-                    <th>Destino</th>
+                    <th>Estado</th>
                     <th>Tipo</th>
                     <th>Cantidad</th>
                     <th></th>
@@ -67,19 +83,16 @@ export function Table() {
             </thead>
 
             <tbody>
-                {data.data?.map((p) => {
+                {data.data?.map((movimiento) => {
                     return (
-                        <tr key={p.id}>
-                            <td>{p.operadorId}</td>
-                            <td>{p.fecha}</td>
-                            <td>{p.productoId}</td>
-                            <td>{p.estadoOrigen}</td>
-                            <td>{p.estadoDestino}</td>
-                            <td>{p.tipo}</td>
-                            <td>{p.cantidad}</td>
-                            <th>
-                                <button className="btn btn-ghost btn-sm">editar</button>
-                            </th>
+                        <tr key={movimiento.id}>
+                            <td>{movimiento.operadorId}</td>
+                            <td>{movimiento.fecha}</td>
+                            <td>{movimiento.productoId}</td>
+                            <td>{/* <MovimientoOrigen movimiento={movimiento} /> */}</td>
+                            <td>{movimiento.tipo}</td>
+                            <td>{movimiento.cantidad}</td>
+                            <th></th>
                         </tr>
                     );
                 })}

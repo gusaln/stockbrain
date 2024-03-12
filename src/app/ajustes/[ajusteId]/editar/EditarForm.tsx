@@ -59,7 +59,7 @@ export default function Form({ ajuste, almacenes, onSubmit }: Props) {
                     errors={state.errors?.fecha}
                 />
 
-                <Select
+                {/* <Select
                     name="almacenId"
                     label="ID Almacén"
                     options={almacenes.map((almacen) => ({
@@ -69,7 +69,7 @@ export default function Form({ ajuste, almacenes, onSubmit }: Props) {
                     onChange={(ev) => setAlmacenId(ev.target.value)}
                     value={almacenId}
                     errors={state.errors?.almacenId}
-                />
+                /> */}
 
                 <Input //Search
                     type="number"

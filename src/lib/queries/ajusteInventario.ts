@@ -1,25 +1,7 @@
 import { ResultSetHeader } from "mysql2";
 import { runQuery } from "../db";
 import { Pagination } from "./pagination";
-
-export const AJUSTE_INVENTARIO_TIPO = {
-    ENTRADA: 1,
-    SALIDA: 2,
-} as const;
-type AjusteInventarioTipoEnum = typeof AJUSTE_INVENTARIO_TIPO;
-type AjusteInventarioTipo = AjusteInventarioTipoEnum[keyof AjusteInventarioTipoEnum];
-const ReverseMap = new Map(Object.entries(AJUSTE_INVENTARIO_TIPO).map(([k, v]) => [v, k as keyof AjusteInventarioTipoEnum]))
-
-export interface AjusteInventario {
-    id: number;
-    operadorId: number;
-    fecha: string;
-    // almacenId: number;
-    productoId: number;
-    tipo: AjusteInventarioTipo;
-    cantidad: number;
-    motivo: string;
-}
+import { AjusteInventarioTipo, AjusteInventario, AjusteInventarioTipoMap } from "./shared";
 
 export async function createAjusteInventario(
     operadorId: number,
@@ -102,7 +84,7 @@ export async function getAjustesInventarioWithRelations(search = undefined, pagi
             almacenId: ajuste.almacenId,
             productoId: ajuste.productoId,
             tipo: ajuste.tipo,
-            tipoNombre: ReverseMap.get(ajuste.tipo),
+            tipoNombre: AjusteInventarioTipoMap.get(ajuste.tipo),
             cantidad: ajuste.cantidad,
             motivo: ajuste.motivo,
         })),

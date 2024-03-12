@@ -1,11 +1,6 @@
 import { runQuery } from "../db";
 import { Pagination } from "./pagination";
-
-export interface Categoria {
-    id: number;
-    nombre: string;
-    descripcion: string;
-}
+import { Categoria } from "./shared";
 
 export async function createCategoria(
     nombre: string,

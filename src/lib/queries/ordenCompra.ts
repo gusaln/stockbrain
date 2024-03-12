@@ -1,22 +1,7 @@
 import { ResultSetHeader } from "mysql2";
 import { runQuery } from "../db";
 import { Pagination } from "./pagination";
-
-export interface OrdenCompra {
-    id: number;
-    proveedorId: number;
-    fecha: string;
-    operadorId: number;
-}
-
-export interface OrdenCompraItem {
-    id: number;
-    ordenId: number;
-    productoId: number;
-    cantidad: number;
-    precioUnitario: number;
-    total: number;
-}
+import { OrdenCompra } from "./shared";
 
 export async function createOrdenCompra(
     proveedorId: number,
