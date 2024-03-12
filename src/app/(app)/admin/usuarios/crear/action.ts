@@ -2,7 +2,7 @@
 
 
 export async function crearUsuario(prevState: any, formData: FormData) {
-    console.log(formData);
+    // console.log(formData);
 
 
     // Crear usuarios and:
