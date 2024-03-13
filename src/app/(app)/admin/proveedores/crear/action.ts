@@ -40,14 +40,9 @@ export async function crearProveedor(prevState: any, formData: FormData) {
     );
 
     redirect(
-        "/proveedores?" +
+        "/admin/proveedores?" +
             new URLSearchParams({
                 "message[success]": "Proveedor registrado con éxito",
             }),
     );
-
-    return {
-        message: "Success",
-        errors: null,
-    };
 }

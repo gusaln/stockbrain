@@ -6,6 +6,7 @@ import Providers from "../providers";
 import { authenticate } from "@/lib/auth";
 import { ROL } from "@/lib/queries";
 import { logout } from "../(auth)/actions";
+import { redirect } from "next/navigation";
 
 const rutas = [
     {
@@ -18,7 +19,7 @@ const rutas = [
     },
     {
         text: "Proveedores",
-        href: "/proveedores",
+        href: "/admin/proveedores",
     },
     {
         text: "Ordenes de compra",
@@ -100,6 +101,10 @@ export default async function RootLayout({
 }>) {
     const user = await authenticate();
 
+    if (!user) {
+        redirect("/login")
+    }
+
     return (
         <Providers>
             <div className="flex min-h-dvh">
@@ -107,7 +112,7 @@ export default async function RootLayout({
                     <Navbar esAdmin={user?.rol == ROL.administrador} />
                 </aside>
 
-                <div className="h-full flex-grow flex-shrink-0 pt-6">
+                <div className="h-full flex-grow flex-shrink-0 pt-6 pb-6">
                     <header className="w-full h-12 shadow-sm mb-8">
                         <div className="w-11/12 flex items-center justify-end mx-auto space-x-4">
                             <span className="font-medium"> Hola {user?.nombre}</span>
