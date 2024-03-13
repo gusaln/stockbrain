@@ -42,16 +42,6 @@ CREATE TABLE
         `rol` INT
     );
 
-DROP TABLE IF EXISTS `clientes`;
-
-CREATE TABLE
-    `clientes` (
-        `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
-        `nombre` VARCHAR(64),
-        `responsable` VARCHAR(64),
-        `ubicacion` VARCHAR(64)
-    );
-
 DROP TABLE IF EXISTS `productos`;
 
 CREATE TABLE
@@ -188,3 +178,92 @@ CREATE TABLE
 
 SET
     foreign_key_checks = 1;
+
+-- Seed usuarios
+INSERT INTO
+    `usuarios` (`id`, `nombre`, `email`, `password`, `rol`)
+VALUES
+    -- password 123456
+    (1, "Admin", "admin@example.com", "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92", 1),
+    (2, "María Chang", "almacen1@example.com", "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92", 2),
+    ;
+
+-- Seed almacenes
+INSERT INTO
+    `almacenes` (`id`, `nombre`, `descripcion`)
+VALUES
+    (1, "Almacén 1", "4452");
+
+-- Seed categorías
+INSERT INTO
+    `categorias` (`id`, `nombre`, `descripcion`)
+VALUES
+    (1, "Routers", "Enrutamiento de datos."),
+    (
+        2,
+        "Switches",
+        "Conexión de dispositivos en una red local."
+    ),
+    (
+        3,
+        "Servidores",
+        "Alto rendimiento para datos y aplicaciones."
+    ),
+    (4, "CPUs", "Procesadores."),
+    (5, "Cableado", "Conexiones.");
+
+-- Seed productos
+INSERT INTO
+    `productos` (
+        `id`,
+        `categoriaId`,
+        `marca`,
+        `modelo`,
+        `descripcion`
+    )
+VALUES
+    (1, 1, "Cisco", "ISR4000", "Router PME."),
+    (2, 2, "TP-Link", "TL-SG108", "Switch 8p Gigabit."),
+    (3, 3, "Dell", "PowerEdge R740", "Servidor."),
+    (
+        4,
+        4,
+        "Intel",
+        "Core i7-13700K",
+        "Procesador 12 núcleos."
+    ),
+    (
+        5,
+        5,
+        "Cat5e",
+        "Cable UTP",
+        "Cable Ethernet 1000 Mbps."
+    ),
+    (
+        6,
+        1,
+        "D-Link",
+        "DIR-850L",
+        "Router inalámbrico AC."
+    ),
+    (
+        7,
+        2,
+        "Netgear",
+        "GS308T",
+        "Switch Gigabit de 24 puertos."
+    ),
+    (
+        8,
+        3,
+        "HPE",
+        "ProLiant DL380 Gen10 Plus",
+        "Servidor rack."
+    ),
+    (
+        9,
+        4,
+        "AMD",
+        "Ryzen 9 7950X",
+        "Procesador 16 núcleos."
+    );

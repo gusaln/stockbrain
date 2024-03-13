@@ -1,5 +1,6 @@
 import { createHash } from "crypto";
 import { runQuery } from "../db";
+import { Pagination } from "./pagination";
 
 export const ROL = {
     administrador: 1,
@@ -29,6 +30,23 @@ export async function createUsuario(nombre: string, email: string, password: str
     });
 
     return;
+}
+
+export async function getUsuarios(search = undefined, pagination: Pagination = {}) {
+    const limit = pagination.limit ?? 10;
+    const offset = ((pagination.page ?? 1) - 1) * limit;
+    const [total, data] = await runQuery(async function (connection) {
+        const [countRes, countField] = await connection.query("SELECT COUNT(id) as total FROM usuarios");
+
+        const [dataRes, dataField] = await connection.query("SELECT * FROM usuarios LIMIT ?, ?", [offset, limit]);
+
+        return [countRes[0].total, dataRes];
+    });
+
+    return {
+        data: data as Usuario[],
+        total: total as number,
+    };
 }
 
 export async function findUsuarioById(id: number) {
