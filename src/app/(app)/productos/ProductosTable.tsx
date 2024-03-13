@@ -3,7 +3,7 @@ import { Loader } from "@/components/Loader";
 import { PaginationSteps, usePagination } from "@/components/pagination";
 import { Categoria, Producto } from "@/lib/queries";
 import { PaginatedResponse } from "@/utils";
-import { ExclamationCircleIcon } from "@heroicons/react/16/solid";
+import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import { useQuery } from "@tanstack/react-query";
 
 export function ProductosTable(){
@@ -35,7 +35,7 @@ export function ProductosTable(){
         return (
             <div role="alert" className="alert alert-error">
                 
-                <ExclamationCircleIcon width="16"></ExclamationCircleIcon>
+                <ExclamationCircleIcon width="24" />
 
                 <span>{error.message}</span>
             </div>

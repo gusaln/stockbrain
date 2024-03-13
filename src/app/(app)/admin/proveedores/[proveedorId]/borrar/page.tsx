@@ -36,7 +36,7 @@ export default async function Page({ params }: { params: { proveedorId: number }
                 <div className="card w-1/2 shadow-lg">
                     {estaEnUso ? (
                         <div role="alert" className="alert alert-error">
-                            <ExclamationCircleIcon width="16" />
+                            <ExclamationCircleIcon width="24" />
                             <span>Este proveedor tiene ordenes de compra asociada y no puede borrarse</span>
                         </div>
                     ) : (

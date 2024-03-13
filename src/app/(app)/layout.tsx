@@ -17,10 +17,7 @@ const rutas = [
         text: "Productos",
         href: "/productos",
     },
-    {
-        text: "Proveedores",
-        href: "/admin/proveedores",
-    },
+
     {
         text: "Ordenes de compra",
         href: "/ordenes/compra",
@@ -45,8 +42,16 @@ const rutasAdmin = [
         href: "/admin/usuarios",
     },
     {
+        text: "Almacenes",
+        href: "/admin/almacenes",
+    },
+    {
         text: "Categorias",
         href: "/admin/categorias",
+    },
+    {
+        text: "Proveedores",
+        href: "/admin/proveedores",
     },
 ];
 
@@ -102,7 +107,7 @@ export default async function RootLayout({
     const user = await authenticate();
 
     if (!user) {
-        redirect("/login")
+        redirect("/login");
     }
 
     return (

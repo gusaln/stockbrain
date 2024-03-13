@@ -33,7 +33,7 @@ export function Table() {
     if (isError)
         return (
             <div role="alert" className="alert alert-error">
-                <ExclamationCircleIcon width="16"/>
+                <ExclamationCircleIcon width="24" />
                 <span>{error.message}</span>
             </div>
         );

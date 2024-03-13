@@ -3,7 +3,7 @@ import { Loader } from "@/components/Loader";
 import { PaginationSteps, usePagination } from "@/components/pagination";
 import { OrdenConsumo } from "@/lib/queries";
 import { PaginatedResponse } from "@/utils";
-import { ExclamationCircleIcon } from "@heroicons/react/16/solid";
+import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import { useQuery } from "@tanstack/react-query";
 
 export function OrdenesConsumoTable() {
@@ -32,7 +32,7 @@ export function OrdenesConsumoTable() {
     if (isError)
         return (
             <div role="alert" className="alert alert-error">
-                <ExclamationCircleIcon width="16" />
+                <ExclamationCircleIcon width="24" />
                 <span>{error.message}</span>
             </div>
         );

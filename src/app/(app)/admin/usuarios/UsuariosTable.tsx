@@ -3,7 +3,7 @@ import { Loader } from "@/components/Loader";
 import { PaginationSteps, usePagination } from "@/components/pagination";
 import { Usuario } from "@/lib/queries";
 import { PaginatedResponse } from "@/utils";
-import { ExclamationCircleIcon } from "@heroicons/react/16/solid";
+import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
 import { useQuery } from "@tanstack/react-query";
 
 export function UsuarioTable() {
