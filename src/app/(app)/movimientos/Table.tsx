@@ -1,9 +1,10 @@
 "use client";
 import { Loader } from "@/components/Loader";
 import { PaginationSteps, usePagination } from "@/components/pagination";
+import { formatDatetime } from "@/lib/format";
 import { MovimientoInventario, getProductoEstadoLabel } from "@/lib/queries/shared";
 import { PaginatedResponse } from "@/utils";
-import { ArrowRightCircleIcon } from "@heroicons/react/16/solid";
+import { ArrowRightCircleIcon, ExclamationCircleIcon } from "@heroicons/react/16/solid";
 import { useQuery } from "@tanstack/react-query";
 
 export function MovimientoOrigen({ movimiento }: { movimiento: MovimientoInventario }) {
@@ -51,19 +52,7 @@ export function Table() {
     if (isError)
         return (
             <div role="alert" className="alert alert-error">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="stroke-current shrink-0 h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                </svg>
+                <ExclamationCircleIcon width="16"></ExclamationCircleIcon>
                 <span>{error.message}</span>
             </div>
         );
@@ -86,11 +75,11 @@ export function Table() {
                 {data.data?.map((movimiento) => {
                     return (
                         <tr key={movimiento.id}>
-                            <td>{movimiento.operadorId}</td>
-                            <td>{movimiento.fecha}</td>
-                            <td>{movimiento.productoId}</td>
-                            <td>{/* <MovimientoOrigen movimiento={movimiento} /> */}</td>
-                            <td>{movimiento.tipo}</td>
+                            <td>{movimiento.operador.nombre}</td>
+                            <td>{formatDatetime(movimiento.fecha)}</td>
+                            <td>{movimiento.producto.marca} {movimiento.producto.modelo}</td>
+                            <td><MovimientoOrigen movimiento={movimiento} /> </td>
+                            <td>{movimiento.tipoNombre}</td>
                             <td>{movimiento.cantidad}</td>
                             <th></th>
                         </tr>

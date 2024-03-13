@@ -1,11 +1,13 @@
 "use client";
 
-import { MovimientoOrigen } from "@/app/movimientos/Table";
 import { Loader } from "@/components/Loader";
 import { usePagination, PaginationSteps } from "@/components/pagination";
-import { MovimientoInventario } from "@/lib/queries/shared";
+import { MovimientoInventario, MovimientoInventarioTipoLabelMap } from "@/lib/queries/shared";
 import { PaginatedResponse } from "@/utils";
 import { useQuery } from "@tanstack/react-query";
+import { MovimientoOrigen } from "../../movimientos/Table";
+import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
+import { formatDatetime } from "@/lib/format";
 
 export function ProductoMovimientosTable({ productoId }: { productoId: number }) {
     const { page, setPage, limit, setLimit } = usePagination();
@@ -35,19 +37,7 @@ export function ProductoMovimientosTable({ productoId }: { productoId: number })
     if (isError)
         return (
             <div role="alert" className="alert alert-error">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="stroke-current shrink-0 h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                </svg>
+                <ExclamationCircleIcon width="16"></ExclamationCircleIcon>
                 <span>{error.message}</span>
             </div>
         );
@@ -69,12 +59,12 @@ export function ProductoMovimientosTable({ productoId }: { productoId: number })
                 {data.data?.map((movimiento) => {
                     return (
                         <tr key={movimiento.id}>
-                            <td>{movimiento.operadorId}</td>
-                            <td>{movimiento.fecha}</td>
+                            <td>{movimiento.operador.nombre}</td>
+                            <td>{formatDatetime(movimiento.fecha)}</td>
                             <td>
                                 <MovimientoOrigen movimiento={movimiento} />
                             </td>
-                            <td>{movimiento.tipo}</td>
+                            <td>{MovimientoInventarioTipoLabelMap.get(movimiento.tipo)}</td>
                             <td>{movimiento.cantidad}</td>
                             <th></th>
                         </tr>
@@ -84,7 +74,7 @@ export function ProductoMovimientosTable({ productoId }: { productoId: number })
 
             <tfoot>
                 <tr>
-                    <td colSpan={3}>
+                    <td colSpan={6}>
                         <PaginationSteps page={page} total={data.total} limit={limit} onPageChange={setPage} />
                     </td>
                 </tr>

@@ -143,7 +143,7 @@ CREATE TABLE
         `estado` TINYINT,
         `tipo` INT,
         `cantidad` INT,
-        `motivo` VARCHAR(128),
+        `motivo` VARCHAR(256),
         FOREIGN KEY (`operadorId`) REFERENCES `usuarios` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
         -- FOREIGN KEY (`almacenId`) REFERENCES `almacenes` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
         FOREIGN KEY (`productoId`) REFERENCES `productos` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT

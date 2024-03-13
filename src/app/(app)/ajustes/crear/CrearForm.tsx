@@ -31,7 +31,7 @@ export default function Form(props: Props) {
 
                 <FormError message={state.message}/>
 
-                <Input type="date" name="fecha" label="Fecha" errors={state.errors?.fecha} />
+                <Input name="fecha" label="Fecha (formato: 2024-12-31)" errors={state.errors?.fecha} />
                 {/* <Input name="almacen" label="Almacén" errors={state.errors?.almacenId} /> */}
 
                 <Select

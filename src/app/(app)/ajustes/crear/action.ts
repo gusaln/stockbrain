@@ -1,40 +1,55 @@
 "use server";
 
+import { authenticateOrFail } from "@/lib/auth";
+import { createAjusteInventario } from "@/lib/queries";
+import { AjusteInventarioTipo } from "@/lib/queries/shared";
 import { z } from "@/validation";
-
+import { parse } from "date-fns";
+import { redirect } from "next/navigation";
 
 const schema = z.object({
-    fecha: z.string().trim().max(64),
-    almacenId: z.number(),
-    productoId: z.number(),
+    fecha: z.string().trim().max(64).datetime(),
+    // almacenId: z.number().int().positive(),
+    productoId: z.number().int().positive(),
     tipo: z.number(),
     cantidad: z.number(),
-    motivo: z.string().trim().max(300),
+    motivo: z.string().trim().max(256),
 });
 
 export async function crearAjuste(prevState: any, formData: FormData) {
+    console.log(Object.fromEntries(formData.entries()));
+
     const validatedFields = schema.safeParse({
-        fecha: formData.get('fecha'),
-        almacenId: formData.get('almacenId'),
-        productoId: formData.get('productoId'),
-        tipo: formData.get('tipo'),
-        cantidad: formData.get('cantidad'),
-        motivo: formData.get('motivo'),
-    })
+        fecha: formData.get("fecha") + "T00:00:00Z",
+        // almacenId: parseInt(formData.get("almacenId" as string),
+        productoId: parseInt(formData.get("productoId") as string),
+        tipo: parseInt(formData.get("tipo") as string),
+        cantidad: parseInt(formData.get("cantidad") as string),
+        motivo: formData.get("motivo"),
+    });
 
-    // Return early if the form data is invalid
     if (!validatedFields.success) {
-        console.error(validatedFields.error.message, validatedFields.error.flatten().fieldErrors)
-
         return {
-            message: "Error: " + validatedFields.error.message,
+            message: "Datos inválidos",
             errors: validatedFields.error.flatten().fieldErrors,
-        }
+        };
     }
 
+    const user = await authenticateOrFail();
 
-    return {
-        message: "WE HAVE A SITUATION",
-        errors: null
-    };
+    const ordenId = await createAjusteInventario(
+        user.id,
+        parse(formData.get("fecha") as string, "yyyy-MM-dd", new Date()),
+        validatedFields.data.productoId,
+        validatedFields.data.tipo as AjusteInventarioTipo,
+        validatedFields.data.cantidad,
+        validatedFields.data.motivo,
+    );
+
+    redirect(
+        "/ajustes?" +
+            new URLSearchParams({
+                "message[success]": "Ajuste registrado con éxito",
+            }),
+    );
 }

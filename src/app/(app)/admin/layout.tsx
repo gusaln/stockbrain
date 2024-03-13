@@ -19,5 +19,5 @@ export default async function RootLayout({
         redirect("/");
     }
 
-    return { children };
+    return <>{children}</>;
 }

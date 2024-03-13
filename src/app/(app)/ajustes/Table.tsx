@@ -1,7 +1,9 @@
 "use client";
 import { Loader } from "@/components/Loader";
 import { PaginationSteps, usePagination } from "@/components/pagination";
+import { formatDatetime } from "@/lib/format";
 import { AjusteInventarioWithRelations } from "@/lib/queries";
+import { AjusteInventarioTipoMap } from "@/lib/queries/shared";
 import { PaginatedResponse } from "@/utils";
 import { useQuery } from "@tanstack/react-query";
 
@@ -56,7 +58,7 @@ export function Table() {
                 <tr>
                     <th>Operador</th>
                     <th>Fecha</th>
-                    <th>Almacén</th>
+                    {/* <th>Almacén</th> */}
                     <th>Producto</th>
                     <th>Tipo</th>
                     <th>Cantidad</th>
@@ -70,10 +72,10 @@ export function Table() {
                     return (
                         <tr key={ajuste.id}>
                             <td>{ajuste.operador.nombre}</td>
-                            <td>{ajuste.fecha}</td>
-                            <td>{ajuste.almacen.nombre}</td>
+                            <td>{formatDatetime(ajuste.fecha)}</td>
+                            {/* <td>{ajuste.almacen.nombre}</td> */}
                             <td>{ajuste.producto.marca} - {ajuste.producto.modelo}</td>
-                            <td>{ajuste.tipo}</td>
+                            <td>{AjusteInventarioTipoMap.get(ajuste.tipo)}</td>
                             <td>{ajuste.cantidad}</td>
                             <td>{ajuste.motivo}</td>
                             <th>

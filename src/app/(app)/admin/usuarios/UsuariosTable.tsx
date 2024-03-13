@@ -1,6 +1,6 @@
 "use client";
 import { Loader } from "@/components/Loader";
-import { usePagination } from "@/components/pagination";
+import { PaginationSteps, usePagination } from "@/components/pagination";
 import { Usuario } from "@/lib/queries";
 import { PaginatedResponse } from "@/utils";
 import { ExclamationCircleIcon } from "@heroicons/react/16/solid";
@@ -10,7 +10,7 @@ export function UsuarioTable() {
     const { page, setPage, limit, setLimit } = usePagination();
 
     const { data, error, isFetching, isError } = useQuery({
-        queryKey: ["/usuarios/api", { page: page, limit: limit }],
+        queryKey: ["/admin/usuarios/api", { page: page, limit: limit }],
         queryFn: async ({ queryKey }) => {
             const queryParams = queryKey[1] as { page: number; limit: number };
             const url = new URLSearchParams({
@@ -58,6 +58,14 @@ export function UsuarioTable() {
                     );
                 })}
             </tbody>
+
+            <tfoot>
+                <tr>
+                    <td colSpan="3">
+                        <PaginationSteps page={page} total={data.total} limit={limit} onPageChange={setPage} />
+                    </td>
+                </tr>
+            </tfoot>
         </table>
     );
 }

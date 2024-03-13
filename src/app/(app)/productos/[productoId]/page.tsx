@@ -54,6 +54,7 @@ export default async function Page({ params }: { params: { productoId: number } 
                 <section className="w-full justify-center">
                     <section className="card w-full shadow-md">
                         <div className="card-body">
+                            <h2 className="card-title">Movimientos de inventario</h2>
                             <ProductoMovimientosTable productoId={producto.id} />
                         </div>
                     </section>
