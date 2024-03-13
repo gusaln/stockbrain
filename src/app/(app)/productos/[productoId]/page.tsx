@@ -30,21 +30,21 @@ export default async function Page({ params }: { params: { productoId: number } 
                     <div className="card w-full shadow-lg">
                         <div className="card-body">
                             <h2 className="card-title">Bueno</h2>
-                            <p className="flex justify-end font-medium text-3xl">{stocks[PRODUCTO_ESTADO.BUENO]}</p>
+                            <p className="flex justify-end font-medium text-2xl lg:text-4xl">{stocks[PRODUCTO_ESTADO.BUENO]}</p>
                         </div>
                     </div>
 
                     <div className="card w-full shadow-lg">
                         <div className="card-body">
                             <h2 className="card-title">En revision</h2>
-                            <p className="flex justify-end font-medium text-3xl">{stocks[PRODUCTO_ESTADO.REVISION]}</p>
+                            <p className="flex justify-end font-medium text-2xl lg:text-4xl">{stocks[PRODUCTO_ESTADO.REVISION]}</p>
                         </div>
                     </div>
 
                     <div className="card w-full shadow-lg">
                         <div className="card-body">
                             <h2 className="card-title">Defectuoso</h2>
-                            <p className="flex justify-end font-medium text-3xl">
+                            <p className="flex justify-end font-medium text-2xl lg:text-4xl">
                                 {stocks[PRODUCTO_ESTADO.DEFECTUOSO]}
                             </p>
                         </div>

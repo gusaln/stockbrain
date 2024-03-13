@@ -1,8 +1,13 @@
-import { ResultSetHeader } from "mysql2/promise";
+import { PoolConnection, ResultSetHeader } from "mysql2/promise";
 import { runQuery } from "../db";
 import { Pagination } from "./pagination";
-import { PRODUCTO_ESTADO, MovimientoInventario, MovimientoInventarioTipoLabelMap } from "./shared";
-import { Producto, ProductoStock } from "./shared";
+import {
+    MovimientoInventario,
+    MovimientoInventarioTipoLabelMap,
+    PRODUCTO_ESTADO,
+    Producto,
+    ProductoStock,
+} from "./shared";
 
 export async function createProducto(
     categoriaId: number,
@@ -19,6 +24,47 @@ export async function createProducto(
     });
 
     return (result as ResultSetHeader).insertId;
+}
+
+export async function calcularStockQuery(connection: PoolConnection, productoId: number) {
+    const insert = await connection.prepare(
+        `INSERT INTO productoStocks (productoId, estado, cantidad) 
+        VALUES (?, ?, 0)
+        ON DUPLICATE KEY UPDATE cantidad = 0`,
+    );
+
+    await Promise.all(Object.values(PRODUCTO_ESTADO).map((estado) => insert.execute([productoId, estado])));
+
+    // Calculamos el stock actual con los movimientos
+    await connection.query(
+        `UPDATE productoStocks 
+    JOIN (
+        SELECT m.productoId, m.estadoDestino as estado, SUM(m.cantidad) as cantidad FROM movimientosInventario as m
+        WHERE 
+            m.productoId = ?
+        GROUP BY 
+            m.productoId, 
+            m.estadoDestino
+    ) AS m_groupby ON m_groupby.productoId = productoStocks.id AND m_groupby.estado = productoStocks.estado
+    SET productoStocks.cantidad = m_groupby.cantidad`,
+        [productoId, productoId],
+    );
+
+    // En las transferencias tenemos que remover los
+    await connection.query(
+        `UPDATE productoStocks 
+    JOIN (
+        SELECT m.productoId, m.estadoOrigen as estado, SUM(m.cantidad)*-1 as cantidad FROM movimientosInventario as m
+        WHERE 
+            m.productoId = ? AND
+            m.estadoOrigen IS NOT NULL
+        GROUP BY 
+            m.productoId, 
+            m.estadoOrigen
+    ) AS m_groupby ON m_groupby.productoId = productoStocks.id AND m_groupby.estado = productoStocks.estado
+    SET productoStocks.cantidad = m_groupby.cantidad`,
+        [productoId, productoId],
+    );
 }
 
 export async function existsProducto(productoId: number) {

@@ -29,6 +29,7 @@ export async function createAjusteInventario(
 
         const ajusteId = (result as ResultSetHeader).insertId;
 
+        const delta = tipo == AJUSTE_INVENTARIO_TIPO.ENTRADA ? cantidad : -cantidad;
         await connection.query(
             `INSERT INTO movimientosInventario 
                 (   
@@ -57,8 +58,15 @@ export async function createAjusteInventario(
                 PRODUCTO_ESTADO.BUENO,
                 MOVIMIENTO_INVENTARIO_TIPO.AJUSTE,
                 ajusteId,
-                tipo == AJUSTE_INVENTARIO_TIPO.ENTRADA ? cantidad : -cantidad,
+                delta,
             ],
+        );
+
+        await connection.query(
+            `INSERT INTO productoStocks (productoId, estado, cantidad) 
+            VALUES (?, ?, ?) 
+            ON DUPLICATE KEY UPDATE cantidad = cantidad + ?`,
+            [productoId, PRODUCTO_ESTADO.BUENO, delta, delta],
         );
 
         return ajusteId;

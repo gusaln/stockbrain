@@ -54,6 +54,12 @@ export async function createOrdenCompra(
                 )`,
         );
 
+        const productosStockSql = await connection.prepare(
+            `INSERT INTO productoStocks (productoId, estado, cantidad) 
+            VALUES (?, ?, ?) 
+            ON DUPLICATE KEY UPDATE cantidad = cantidad + ?`,
+        );
+
         await Promise.all(
             items
                 .map((item) =>
@@ -74,6 +80,16 @@ export async function createOrdenCompra(
                             PRODUCTO_ESTADO.BUENO,
                             MOVIMIENTO_INVENTARIO_TIPO.ENTRADA,
                             ordenId,
+                            item.cantidad,
+                        ]),
+                    ),
+                )
+                .concat(
+                    items.map((item) =>
+                        productosStockSql.execute([
+                            item.productoId,
+                            PRODUCTO_ESTADO.BUENO,
+                            item.cantidad,
                             item.cantidad,
                         ]),
                     ),
