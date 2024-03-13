@@ -56,7 +56,7 @@ export function Table() {
                             <td>{categoria.nombre}</td>
                             <td>{categoria.descripcion}</td>
                             <th>
-                                <a href={`/categorias/${categoria.id}/editar`} className="btn btn-ghost btn-sm">editar</a>
+                                <a href={`/admin/categorias/${categoria.id}/editar`} className="btn btn-ghost btn-sm">editar</a>
                             </th>
                         </tr>
                     );

@@ -26,11 +26,11 @@ export default async function Page({ params }: { params: { categoriaId: number }
         <ResponsiveLayout
             title="Editar Categoría"
             acciones={() => {
-                return <LinkAction href="/categorias">Volver</LinkAction>;
+                return <LinkAction href="/admin/categorias">Volver</LinkAction>;
             }}
         >
             <section className="w-full justify-center flex">
-                <div className="card w-fit shadow-lg">
+                <div className="card w-1/2 shadow-lg">
                     <EditarForm categoria={categoria} onSubmit={editarCategoriaWithId} />
                 </div>
             </section>

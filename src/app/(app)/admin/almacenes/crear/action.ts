@@ -2,7 +2,6 @@
 
 import { z } from "@/validation";
 
-
 const schema = z.object({
     nombre: z.string().trim().max(64),
     ubicacion: z.string().trim().max(64),
@@ -10,23 +9,22 @@ const schema = z.object({
 
 export async function crearAlmacen(prevState: any, formData: FormData) {
     const validatedFields = schema.safeParse({
-        nombre: formData.get('nombre'),
-        ubicacion: formData.get('ubicacion'),
-    })
+        nombre: formData.get("nombre"),
+        ubicacion: formData.get("ubicacion"),
+    });
 
     // Return early if the form data is invalid
     if (!validatedFields.success) {
-        console.error(validatedFields.error.message, validatedFields.error.flatten().fieldErrors)
+        console.error(validatedFields.error.message, validatedFields.error.flatten().fieldErrors);
 
         return {
-            message: "Error: " + validatedFields.error.message,
+            message: "Datos inválidos",
             errors: validatedFields.error.flatten().fieldErrors,
-        }
+        };
     }
-
 
     return {
         message: "WE HAVE A SITUATION",
-        errors: null
+        errors: null,
     };
 }

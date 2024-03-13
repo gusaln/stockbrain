@@ -20,7 +20,7 @@ export async function login(_state: unknown, formData: FormData) {
         console.error(validatedFields.error.message, validatedFields.error.flatten().fieldErrors);
 
         return {
-            message: "Error: " + validatedFields.error.message,
+            message: "Datos inválidos",
             errors: validatedFields.error.flatten().fieldErrors,
         };
     }
