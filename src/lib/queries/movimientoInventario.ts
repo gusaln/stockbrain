@@ -1,28 +1,7 @@
 import { ResultSetHeader } from "mysql2";
 import { runQuery } from "../db";
 import { Pagination } from "./pagination";
-import { ProductoEstado } from ".";
-
-const MOVIMIENTO_INVENTARIO_TIPO = {
-    ENTRADA: 1,
-    SALIDA: 2,
-    TRANSFERENCIA: 3,
-    AJUSTE: 4,
-} as const;
-type MovimientoInventarioTipoEnum = typeof MOVIMIENTO_INVENTARIO_TIPO;
-type MovimientoInventarioTipo = MovimientoInventarioTipoEnum[keyof MovimientoInventarioTipoEnum];
-
-export interface MovimientoInventario {
-    id: number;
-    fecha: string;
-    operadorId: number;
-    productoId: number;
-    estadoOrigen: ProductoEstado | null;
-    estadoDestino: ProductoEstado;
-    tipo: MovimientoInventarioTipo;
-    relacionId: number | null;
-    cantidad: number;
-}
+import { ProductoEstado, MovimientoInventarioTipo, MovimientoInventario } from "./shared";
 
 export async function createMovimientoInventario(
     fecha: string,

@@ -29,7 +29,7 @@ export function ButtonAction(props: LinkActionProps) {
 }
 
 interface Props {
-    title: ReactNode;
+    title?: ReactNode;
     acciones?: () => ReactNode;
     children?: ReactNode;
 }

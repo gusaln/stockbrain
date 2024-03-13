@@ -1,4 +1,4 @@
-DROP DATABASE IF EXISTS `stockbrain`;
+-- DROP DATABASE IF EXISTS `stockbrain`;
 CREATE DATABASE IF NOT EXISTS `stockbrain`;
 
 -- Referencia de tamaño
@@ -6,6 +6,9 @@ CREATE DATABASE IF NOT EXISTS `stockbrain`;
 --  64 caracteres 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
 -- 128 caracteres 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
 USE `stockbrain`;
+
+SET
+    foreign_key_checks = 0;
 
 DROP TABLE IF EXISTS `categorias`;
 
@@ -27,15 +30,6 @@ CREATE TABLE
         `email` VARCHAR(128),
         `direccion` VARCHAR(128)
     );
-
--- DROP TABLE IF EXISTS `almacenes`;
-
--- CREATE TABLE
---     `almacenes` (
---         `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
---         `nombre` VARCHAR(64),
---         `ubicacion` VARCHAR(64)
---     );
 
 DROP TABLE IF EXISTS `usuarios`;
 
@@ -64,34 +58,35 @@ CREATE TABLE
     `productos` (
         `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
         `categoriaId` BIGINT,
-        -- `proveedorId` BIGINT,
         `marca` VARCHAR(128),
         `modelo` VARCHAR(128),
         `descripcion` VARCHAR(128),
-        -- `precio` VARCHAR(128),
         `imagen` VARCHAR(128) NULL,
         FOREIGN KEY (`categoriaId`) REFERENCES `categorias` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
-        -- FOREIGN KEY (`proveedorId`) REFERENCES `proveedores` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
     );
+
+DROP TABLE IF EXISTS `productoStocks`;
 
 CREATE TABLE
     `productoStocks` (
         `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
+        -- `almacenId` BIGINT,
         `productoId` BIGINT,
         `identificador` VARCHAR(128),
         `estado` TINYINT,
         `cantidad` BIGINT,
+        UNIQUE (`productoId`, `estado`),
         FOREIGN KEY (`productoId`) REFERENCES `productos` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
     );
 
--- DROP TABLE IF EXISTS `almacenes`;
+DROP TABLE IF EXISTS `almacenes`;
 
--- CREATE TABLE
---     `almacenes` (
---         `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
---         `nombre` VARCHAR(64),
---         `ubicacion` VARCHAR(64)
---     );
+CREATE TABLE
+    `almacenes` (
+        `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
+        `nombre` VARCHAR(64),
+        `ubicacion` VARCHAR(64)
+    );
 
 DROP TABLE IF EXISTS `ordenesCompra`;
 
@@ -126,11 +121,9 @@ DROP TABLE IF EXISTS `ordenesConsumo`;
 CREATE TABLE
     `ordenesConsumo` (
         `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
-        -- `clienteId` BIGINT,
         `descripcion` VARCHAR(128),
         `fecha` TIMESTAMP,
         `operadorId` BIGINT,
-        -- FOREIGN KEY (`clienteId`) REFERENCES `clientes` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
         FOREIGN KEY (`operadorId`) REFERENCES `usuarios` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
     );
 
@@ -143,8 +136,6 @@ CREATE TABLE
         -- `almacenId` BIGINT,
         `productoId` BIGINT,
         `cantidad` INT,
-        -- `precioUnitario` DECIMAL(10, 2),
-        -- `total` DECIMAL(10, 2),
         FOREIGN KEY (`ordenId`) REFERENCES `ordenesCompra` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
         -- FOREIGN KEY (`almacenId`) REFERENCES `almacenes` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
         FOREIGN KEY (`productoId`) REFERENCES `productos` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
@@ -176,12 +167,24 @@ CREATE TABLE
         `fecha` TIMESTAMP,
         `operadorId` BIGINT,
         `productoId` BIGINT,
+        -- `almacenOrigenId` BIGINT NULL,
+        -- `almacenDestinoId` BIGINT,
         `estadoOrigen` BIGINT NULL,
         `estadoDestino` BIGINT,
         `tipo` INT,
-        -- Se refiere al ID de la orden de compra, consumo o ajuste
-        `relacionId` BIGINT NULL,
+        `ordenCompraId` BIGINT NULL,
+        `ordenConsumoId` BIGINT NULL,
+        `ajusteId` BIGINT NULL,
         `cantidad` INT,
+        `fueEditada` TINYINT DEFAULT FALSE,
         FOREIGN KEY (`operadorId`) REFERENCES `usuarios` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
-        FOREIGN KEY (`productoId`) REFERENCES `productos` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
+        -- FOREIGN KEY (`almacenOrigenId`) REFERENCES `almacenes` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
+        -- FOREIGN KEY (`almacenDestinoId`) REFERENCES `almacenes` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
+        FOREIGN KEY (`ordenCompraId`) REFERENCES `ordenesCompra` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+        FOREIGN KEY (`ordenConsumoId`) REFERENCES `ordenConsumoId` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+        FOREIGN KEY (`ajusteId`) REFERENCES `ajustesInventario` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+        FOREIGN KEY (`productoId`) REFERENCES `productos` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
     );
+
+SET
+    foreign_key_checks = 1;
