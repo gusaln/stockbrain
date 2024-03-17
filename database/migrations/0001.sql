@@ -10,6 +10,26 @@ USE `stockbrain`;
 SET
     foreign_key_checks = 0;
 
+DROP TABLE IF EXISTS `usuarios`;
+
+CREATE TABLE
+    `usuarios` (
+        `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
+        `nombre` VARCHAR(64),
+        `email` VARCHAR(128) UNIQUE,
+        `password` VARCHAR(128),
+        `rol` INT
+    );
+
+DROP TABLE IF EXISTS `almacenes`;
+
+CREATE TABLE
+    `almacenes` (
+        `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
+        `nombre` VARCHAR(64),
+        `ubicacion` VARCHAR(64)
+    );
+
 DROP TABLE IF EXISTS `categorias`;
 
 CREATE TABLE
@@ -31,17 +51,6 @@ CREATE TABLE
         `direccion` VARCHAR(128)
     );
 
-DROP TABLE IF EXISTS `usuarios`;
-
-CREATE TABLE
-    `usuarios` (
-        `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
-        `nombre` VARCHAR(64),
-        `email` VARCHAR(128),
-        `password` VARCHAR(128),
-        `rol` INT
-    );
-
 DROP TABLE IF EXISTS `productos`;
 
 CREATE TABLE
@@ -60,22 +69,14 @@ DROP TABLE IF EXISTS `productoStocks`;
 CREATE TABLE
     `productoStocks` (
         `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
-        -- `almacenId` BIGINT,
+        `almacenId` BIGINT,
         `productoId` BIGINT,
         `identificador` VARCHAR(128),
         `estado` TINYINT,
         `cantidad` BIGINT,
-        UNIQUE (`productoId`, `estado`),
-        FOREIGN KEY (`productoId`) REFERENCES `productos` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
-    );
-
-DROP TABLE IF EXISTS `almacenes`;
-
-CREATE TABLE
-    `almacenes` (
-        `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
-        `nombre` VARCHAR(64),
-        `ubicacion` VARCHAR(64)
+        UNIQUE (`almacenId`, `productoId`, `estado`),
+        FOREIGN KEY (`productoId`) REFERENCES `productos` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
+        FOREIGN KEY (`almacenId`) REFERENCES `almacenes` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
     );
 
 DROP TABLE IF EXISTS `ordenesCompra`;
@@ -96,13 +97,13 @@ CREATE TABLE
     `ordenesCompraItems` (
         `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
         `ordenId` BIGINT,
-        -- `almacenId` BIGINT,
+        `almacenId` BIGINT,
         `productoId` BIGINT,
         `cantidad` INT,
         `precioUnitario` DECIMAL(10, 2),
         `total` DECIMAL(10, 2),
         FOREIGN KEY (`ordenId`) REFERENCES `ordenesCompra` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
-        -- FOREIGN KEY (`almacenId`) REFERENCES `almacenes` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
+        FOREIGN KEY (`almacenId`) REFERENCES `almacenes` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
         FOREIGN KEY (`productoId`) REFERENCES `productos` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
     );
 
@@ -123,11 +124,11 @@ CREATE TABLE
     `ordenesConsumoItems` (
         `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
         `ordenId` BIGINT,
-        -- `almacenId` BIGINT,
+        `almacenId` BIGINT,
         `productoId` BIGINT,
         `cantidad` INT,
         FOREIGN KEY (`ordenId`) REFERENCES `ordenesCompra` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
-        -- FOREIGN KEY (`almacenId`) REFERENCES `almacenes` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
+        FOREIGN KEY (`almacenId`) REFERENCES `almacenes` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
         FOREIGN KEY (`productoId`) REFERENCES `productos` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
     );
 
@@ -138,14 +139,14 @@ CREATE TABLE
         `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
         `operadorId` BIGINT,
         `fecha` TIMESTAMP,
-        -- `almacenId` BIGINT,
+        `almacenId` BIGINT,
         `productoId` BIGINT,
         `estado` TINYINT,
         `tipo` INT,
         `cantidad` INT,
         `motivo` VARCHAR(256),
         FOREIGN KEY (`operadorId`) REFERENCES `usuarios` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
-        -- FOREIGN KEY (`almacenId`) REFERENCES `almacenes` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
+        FOREIGN KEY (`almacenId`) REFERENCES `almacenes` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
         FOREIGN KEY (`productoId`) REFERENCES `productos` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
     );
 
@@ -156,9 +157,9 @@ CREATE TABLE
         `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
         `fecha` TIMESTAMP,
         `operadorId` BIGINT,
+        `almacenOrigenId` BIGINT NULL,
+        `almacenDestinoId` BIGINT,
         `productoId` BIGINT,
-        -- `almacenOrigenId` BIGINT NULL,
-        -- `almacenDestinoId` BIGINT,
         `estadoOrigen` BIGINT NULL,
         `estadoDestino` BIGINT,
         `tipo` INT,
@@ -168,12 +169,12 @@ CREATE TABLE
         `cantidad` INT,
         `fueEditada` TINYINT DEFAULT FALSE,
         FOREIGN KEY (`operadorId`) REFERENCES `usuarios` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
-        -- FOREIGN KEY (`almacenOrigenId`) REFERENCES `almacenes` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
-        -- FOREIGN KEY (`almacenDestinoId`) REFERENCES `almacenes` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
+        FOREIGN KEY (`almacenOrigenId`) REFERENCES `almacenes` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+        FOREIGN KEY (`almacenDestinoId`) REFERENCES `almacenes` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+        FOREIGN KEY (`productoId`) REFERENCES `productos` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
         FOREIGN KEY (`ordenCompraId`) REFERENCES `ordenesCompra` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
         FOREIGN KEY (`ordenConsumoId`) REFERENCES `ordenConsumoId` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-        FOREIGN KEY (`ajusteId`) REFERENCES `ajustesInventario` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-        FOREIGN KEY (`productoId`) REFERENCES `productos` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+        FOREIGN KEY (`ajusteId`) REFERENCES `ajustesInventario` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
     );
 
 SET
@@ -184,13 +185,24 @@ INSERT INTO
     `usuarios` (`id`, `nombre`, `email`, `password`, `rol`)
 VALUES
     -- password 123456
-    (1, "Admin", "admin@example.com", "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92", 1),
-    (2, "María Chang", "almacen1@example.com", "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92", 2),
-    ;
+    (
+        1,
+        "Admin",
+        "admin@example.com",
+        "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
+        1
+    ),
+    (
+        2,
+        "María Chang",
+        "almacen1@example.com",
+        "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
+        2
+    );
 
 -- Seed almacenes
 INSERT INTO
-    `almacenes` (`id`, `nombre`, `descripcion`)
+    `almacenes` (`id`, `nombre`, `ubicacion`)
 VALUES
     (1, "Almacén 1", "4452");
 
@@ -211,6 +223,87 @@ VALUES
     ),
     (4, "CPUs", "Procesadores."),
     (5, "Cableado", "Conexiones.");
+
+-- Seed proveedores
+INSERT INTO
+    `proveedores` (
+        `nombre`,
+        `contacto`,
+        `telefono`,
+        `email`,
+        `direccion`
+    )
+VALUES
+    (
+        "Suministros Bolívar",
+        "Juan Pérez",
+        "+58 212-1234567",
+        "juan.perez@suministrosbolivar.com",
+        "Av. Universidad, Caracas, Venezuela"
+    ),
+    (
+        "Importaciones Maracaibo",
+        "María Rodríguez",
+        "+58 261-2345678",
+        "maria.rodriguez@importacionesmaracaibo.com",
+        "Calle 72, Maracaibo, Venezuela"
+    ),
+    (
+        "Distribuidora Valencia",
+        "Carlos González",
+        "+58 241-3456789",
+        "carlos.gonzalez@distribuidoravalencia.com",
+        "Av. Bolívar Norte, Valencia, Venezuela"
+    ),
+    (
+        "Comercializadora Barquisimeto",
+        "Ana Martínez",
+        "+58 251-4567890",
+        "ana.martinez@comercializadorabarquisimeto.com",
+        "Carrera 19, Barquisimeto, Venezuela"
+    ),
+    (
+        "Proveedora Maracay",
+        "Luis Ramírez",
+        "+58 243-5678901",
+        "luis.ramirez@proveedoramaracay.com",
+        "Av. Constitución, Maracay, Venezuela"
+    ),
+    (
+        "Microred CA",
+        "Miguel Angel Pereira",
+        "0414-9724567",
+        "microredca@gmail.com",
+        "Urbanización La Isabelica, Calle Carabobo, Casa 12, Valencia, Carabobo"
+    ),
+    (
+        "PC SHOP",
+        "Ana Torres",
+        "0412-7274671",
+        "ventas@pcshopvzla.com",
+        "C.C. Siglo XXI, Local A54 PB Edo., Valencia, Carabobo"
+    ),
+    (
+        "Datamastil",
+        "Pedro González",
+        "0241-8716724",
+        "Datamastil@gmail.com",
+        "6 Avenida Norte Sur 70, San Diego 2006, Carabobo"
+    ),
+    (
+        "Compumastil",
+        "Javier Blanco",
+        "0241-8245250",
+        "compumastil@gmail.com",
+        "Local 10, Galeria Los Sauces Shopping Center, Av, Bolivar Norte, Edo Carabobo 2001, Carabobo"
+    ),
+    (
+        "PC Express",
+        "Isabel Mendoza",
+        "0424-4641705",
+        "pcexpressvzla@gmail.com",
+        "Av. Bolívar Norte, C.C. Multicentro El Viñedo, Nivel D, Local D1-50 (al Lado del Elevado El Viñedo), El Viñedo, Valencia"
+    );
 
 -- Seed productos
 INSERT INTO

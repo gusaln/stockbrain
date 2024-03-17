@@ -38,24 +38,21 @@ export function getProductoEstadoLabel(estado: ProductoEstado) {
     switch (estado) {
         case PRODUCTO_ESTADO.BUENO:
             return "bueno";
-            break;
 
         case PRODUCTO_ESTADO.REVISION:
             return "en revisión";
-            break;
 
         case PRODUCTO_ESTADO.DEFECTUOSO:
             return "defectuoso";
-            break;
 
         default:
             return "";
-            break;
     }
 }
 
 export interface ProductoStock {
     id: number;
+    almacenId: number;
     productoId: number;
     identificador: string;
     estado: ProductoEstado;
@@ -69,8 +66,9 @@ export const PRODUCTO_ESTADO = {
 } as const;
 type ProductoEstadoEnum = typeof PRODUCTO_ESTADO;
 export type ProductoEstado = ProductoEstadoEnum[keyof ProductoEstadoEnum];
-export const ProductoEstadoLabelMap = new Map(Object.entries(PRODUCTO_ESTADO).map(([k, v]) => [v, k as keyof ProductoEstadoEnum]));
-
+export const ProductoEstadoLabelMap = new Map(
+    Object.entries(PRODUCTO_ESTADO).map(([k, v]) => [v, k as keyof ProductoEstadoEnum]),
+);
 
 export interface OrdenCompra {
     id: number;
@@ -82,12 +80,12 @@ export interface OrdenCompra {
 export interface OrdenCompraItem {
     id: number;
     ordenId: number;
+    almacenId: number;
     productoId: number;
     cantidad: number;
     precioUnitario: number;
     total: number;
 }
-
 
 export interface OrdenConsumo {
     id: number;
@@ -99,10 +97,10 @@ export interface OrdenConsumo {
 export interface OrdenConsumoItem {
     id: number;
     ordenId: number;
+    almacenId: number;
     productoId: number;
     cantidad: number;
 }
-
 
 export const AJUSTE_INVENTARIO_TIPO = {
     ENTRADA: 1,
@@ -111,19 +109,20 @@ export const AJUSTE_INVENTARIO_TIPO = {
 
 type AjusteInventarioTipoEnum = typeof AJUSTE_INVENTARIO_TIPO;
 export type AjusteInventarioTipo = AjusteInventarioTipoEnum[keyof AjusteInventarioTipoEnum];
-export const AjusteInventarioTipoMap = new Map(Object.entries(AJUSTE_INVENTARIO_TIPO).map(([k, v]) => [v, k as keyof AjusteInventarioTipoEnum]));
+export const AjusteInventarioTipoMap = new Map(
+    Object.entries(AJUSTE_INVENTARIO_TIPO).map(([k, v]) => [v, k as keyof AjusteInventarioTipoEnum]),
+);
 
 export interface AjusteInventario {
     id: number;
     operadorId: number;
     fecha: string;
-    // almacenId: number;
+    almacenId: number;
     productoId: number;
     tipo: AjusteInventarioTipo;
     cantidad: number;
     motivo: string;
 }
-
 
 export const MOVIMIENTO_INVENTARIO_TIPO = {
     ENTRADA: 1,
@@ -133,16 +132,71 @@ export const MOVIMIENTO_INVENTARIO_TIPO = {
 } as const;
 type MovimientoInventarioTipoEnum = typeof MOVIMIENTO_INVENTARIO_TIPO;
 export type MovimientoInventarioTipo = MovimientoInventarioTipoEnum[keyof MovimientoInventarioTipoEnum];
-export const MovimientoInventarioTipoLabelMap = new Map(Object.entries(MOVIMIENTO_INVENTARIO_TIPO).map(([k, v]) => [v, k as keyof MovimientoInventarioTipoEnum]));
+export const MovimientoInventarioTipoLabelMap = new Map(
+    Object.entries(MOVIMIENTO_INVENTARIO_TIPO).map(([k, v]) => [v, k as keyof MovimientoInventarioTipoEnum]),
+);
 
-export interface MovimientoInventario {
+export type MovimientoInventario = {
     id: number;
     fecha: string;
     operadorId: number;
+    almacenDestinoId: number;
     productoId: number;
-    estadoOrigen: ProductoEstado | null;
     estadoDestino: ProductoEstado;
     tipo: MovimientoInventarioTipo;
-    relacionId: number | null;
+    ajusteId: number | null;
+    ordenCompraId: number | null;
+    ordenConsumoId: number | null;
     cantidad: number;
-}
+} & (
+    | {
+          almacenOrigenId: number;
+          estadoOrigen: ProductoEstado;
+      }
+    | {
+          almacenOrigenId: null;
+          estadoOrigen: null;
+      }
+);
+
+export type MovimientoInventarioWithRelations = {
+    id: number;
+    fecha: string;
+    operadorId: number;
+    operador: {
+        id: number;
+        nombre: string;
+    };
+    almacenDestinoId: number;
+    almacenDestino: {
+        id: number;
+        nombre: string;
+    };
+    productoId: number;
+    producto: {
+        id: number;
+        marca: string;
+        modelo: string;
+    };
+    estadoDestino: ProductoEstado;
+    tipo: MovimientoInventarioTipo;
+    tipoNombre: string;
+    ajusteId: number | null;
+    ordenCompraId: number | null;
+    ordenConsumoId: number | null;
+    cantidad: number;
+} & (
+    | {
+          almacenOrigenId: number;
+          almacenOrigen: {
+              id: number;
+              nombre: string;
+          };
+          estadoOrigen: ProductoEstado;
+      }
+    | {
+          almacenOrigenId: null;
+          almacenOrigen: null;
+          estadoOrigen: null;
+      }
+);

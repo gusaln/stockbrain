@@ -1,3 +1,4 @@
+import { groupBy } from "lodash";
 import { PoolConnection, ResultSetHeader } from "mysql2/promise";
 import { runQuery } from "../db";
 import { Pagination } from "./pagination";
@@ -26,42 +27,61 @@ export async function createProducto(
     return (result as ResultSetHeader).insertId;
 }
 
-export async function calcularStockQuery(connection: PoolConnection, productoId: number) {
+export async function calcularStockQuery(connection: PoolConnection, almcadenId: number, productoId: number) {
     const insert = await connection.prepare(
-        `INSERT INTO productoStocks (productoId, estado, cantidad) 
-        VALUES (?, ?, 0)
+        `INSERT INTO productoStocks (almacenId, productoId, estado, cantidad) 
+        VALUES (?, ?, ?, 0)
         ON DUPLICATE KEY UPDATE cantidad = 0`,
     );
 
-    await Promise.all(Object.values(PRODUCTO_ESTADO).map((estado) => insert.execute([productoId, estado])));
+    await Promise.all(Object.values(PRODUCTO_ESTADO).map((estado) => insert.execute([almcadenId, productoId, estado])));
 
     // Calculamos el stock actual con los movimientos
     await connection.query(
         `UPDATE productoStocks 
     JOIN (
-        SELECT m.productoId, m.estadoDestino as estado, SUM(m.cantidad) as cantidad FROM movimientosInventario as m
+        SELECT 
+            m.almacenDestinoId as almacenId, 
+            m.productoId, 
+            m.estadoDestino as estado, 
+            SUM(m.cantidad) as cantidad 
+        FROM movimientosInventario as m
         WHERE 
+            m.almacenDestinoId = ? AND
             m.productoId = ?
         GROUP BY 
+            m.almacenDestinoId, 
             m.productoId, 
             m.estadoDestino
-    ) AS m_groupby ON m_groupby.productoId = productoStocks.id AND m_groupby.estado = productoStocks.estado
+    ) AS m_groupby ON 
+        m_groupby.almacenId = productoStocks.almacenId AND 
+        m_groupby.productoId = productoStocks.productoId AND 
+        m_groupby.estado = productoStocks.estado
     SET productoStocks.cantidad = m_groupby.cantidad`,
-        [productoId, productoId],
+        [almcadenId, productoId],
     );
 
     // En las transferencias tenemos que remover los
     await connection.query(
         `UPDATE productoStocks 
     JOIN (
-        SELECT m.productoId, m.estadoOrigen as estado, SUM(m.cantidad)*-1 as cantidad FROM movimientosInventario as m
+        SELECT 
+            m.almacenOrigenId as almacenId, 
+            m.productoId, 
+            m.estadoOrigen as estado, 
+            SUM(m.cantidad)*-1 as cantidad 
+        FROM movimientosInventario as m
         WHERE 
             m.productoId = ? AND
             m.estadoOrigen IS NOT NULL
         GROUP BY 
+            m.almacenOrigenId, 
             m.productoId, 
             m.estadoOrigen
-    ) AS m_groupby ON m_groupby.productoId = productoStocks.id AND m_groupby.estado = productoStocks.estado
+    ) AS m_groupby ON 
+        m_groupby.almacenId = productoStocks.almacenId AND 
+        m_groupby.productoId = productoStocks.productoId AND 
+        m_groupby.estado = productoStocks.estado
     SET productoStocks.cantidad = m_groupby.cantidad`,
         [productoId, productoId],
     );
@@ -162,9 +182,17 @@ export async function updateProducto(id: number, producto: Exclude<Producto, "id
 
 export async function getProductoStocks(productoId: number) {
     const [data, dataField] = (await runQuery(async function (connection) {
-        const [dataRes, dataField] = await connection.query("SELECT * FROM productoStocks WHERE productoId = ?", [
-            productoId,
-        ]);
+        const [dataRes, dataField] = await connection.query(
+            `SELECT 
+                productoId, 
+                estado, 
+                SUM(cantidad) as cantidad
+            FROM productoStocks 
+            WHERE productoId = ?
+            GROUP BY productoId, estado
+            `,
+            [productoId],
+        );
 
         return [dataRes as ProductoStock[], dataField];
     })) as [ProductoStock[], unknown];
@@ -174,6 +202,39 @@ export async function getProductoStocks(productoId: number) {
         [PRODUCTO_ESTADO.REVISION]: data.find((s) => s.estado == PRODUCTO_ESTADO.REVISION)?.cantidad ?? 0,
         [PRODUCTO_ESTADO.DEFECTUOSO]: data.find((s) => s.estado == PRODUCTO_ESTADO.DEFECTUOSO)?.cantidad ?? 0,
     };
+}
+
+export async function getProductoStocksPorAlmacen(productoId: number) {
+    const [data, dataField] = (await runQuery(async function (connection) {
+        const [dataRes, dataField] = await connection.query(
+            `SELECT 
+                almacenId, 
+                almacenes.nombre as almacen_nombre, 
+                productoId, 
+                estado, 
+                SUM(cantidad) as cantidad
+            FROM productoStocks 
+            LEFT JOIN almacenes ON productoStocks.almacenId = almacenes.id
+            WHERE productoId = ?
+            GROUP BY productoId, estado, almacenId
+            `,
+            [productoId],
+        );
+
+        return [dataRes as ProductoStock[], dataField];
+    })) as [ProductoStock[], unknown];
+
+    const groupByAlmacenId = groupBy(data, "almacenId");
+
+    return Object.values(groupByAlmacenId).map((stocks) => {
+        return {
+            almacenId: stocks[0].almacenId,
+            almacenNombre: stocks[0].almacen_nombre,
+            [PRODUCTO_ESTADO.BUENO]: stocks.find((s) => s.estado == PRODUCTO_ESTADO.BUENO)?.cantidad ?? 0,
+            [PRODUCTO_ESTADO.REVISION]: stocks.find((s) => s.estado == PRODUCTO_ESTADO.REVISION)?.cantidad ?? 0,
+            [PRODUCTO_ESTADO.DEFECTUOSO]: stocks.find((s) => s.estado == PRODUCTO_ESTADO.DEFECTUOSO)?.cantidad ?? 0,
+        };
+    });
 }
 
 export async function getMovimientosInventarioDelProducto(productoId: number, pagination: Pagination = {}) {
@@ -187,9 +248,13 @@ export async function getMovimientosInventarioDelProducto(productoId: number, pa
 
         const [dataRes, dataField] = await connection.query(
             `SELECT movimientosInventario.*,
-                usuarios.nombre as operador_nombre
+                usuarios.nombre as operador_nombre,
+                IF(ISNULL(almacenOrigenId), NULL, aOrigen.nombre) as almacen_origen_nombre,
+                aDestino.nombre as almacen_destino_nombre
             FROM movimientosInventario 
             LEFT JOIN usuarios ON movimientosInventario.operadorId = usuarios.id
+            LEFT JOIN almacenes AS aOrigen ON movimientosInventario.almacenOrigenId = aOrigen.id
+            LEFT JOIN almacenes AS aDestino ON movimientosInventario.almacenDestinoId = aDestino.id
             WHERE productoId = ?
             ORDER BY fecha DESC, id DESC
             LIMIT ?, ?`,
@@ -207,6 +272,18 @@ export async function getMovimientosInventarioDelProducto(productoId: number, pa
             operador: {
                 id: movimiento.operadorId,
                 nombre: movimiento.operador_nombre,
+            },
+            almacenOrigenId: movimiento.almacenOrigenId,
+            almacenOrigen: movimiento.almacenOrigenId
+                ? {
+                      id: movimiento.almacenOrigenId,
+                      nombre: movimiento.almacen_origen_nombre,
+                  }
+                : null,
+            almacenDestinoId: movimiento.almacenDestinoId,
+            almacenDestino: {
+                id: movimiento.almacenDestinoId,
+                nombre: movimiento.almacen_destino_nombre,
             },
             productoId: movimiento.productoId,
             estadoOrigen: movimiento.estadoOrigen,

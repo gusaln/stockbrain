@@ -9,7 +9,7 @@ import { redirect } from "next/navigation";
 
 const schema = z.object({
     fecha: z.string().trim().max(64).datetime(),
-    // almacenId: z.number().int().positive(),
+    almacenId: z.number().int().positive(),
     productoId: z.number().int().positive(),
     tipo: z.number(),
     cantidad: z.number(),
@@ -17,11 +17,9 @@ const schema = z.object({
 });
 
 export async function crearAjuste(prevState: any, formData: FormData) {
-    console.log(Object.fromEntries(formData.entries()));
-
     const validatedFields = schema.safeParse({
         fecha: formData.get("fecha") + "T00:00:00Z",
-        // almacenId: parseInt(formData.get("almacenId" as string),
+        almacenId: parseInt(formData.get("almacenId") as string),
         productoId: parseInt(formData.get("productoId") as string),
         tipo: parseInt(formData.get("tipo") as string),
         cantidad: parseInt(formData.get("cantidad") as string),
@@ -37,9 +35,10 @@ export async function crearAjuste(prevState: any, formData: FormData) {
 
     const user = await authenticateOrFail();
 
-    const ordenId = await createAjusteInventario(
+    const ajusteId = await createAjusteInventario(
         user.id,
         parse(formData.get("fecha") as string, "yyyy-MM-dd", new Date()),
+        validatedFields.data.almacenId,
         validatedFields.data.productoId,
         validatedFields.data.tipo as AjusteInventarioTipo,
         validatedFields.data.cantidad,

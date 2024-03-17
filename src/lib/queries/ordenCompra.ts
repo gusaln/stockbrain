@@ -5,6 +5,7 @@ import { MOVIMIENTO_INVENTARIO_TIPO, OrdenCompra, PRODUCTO_ESTADO } from "./shar
 import { formatForSql } from "./utils";
 
 export interface NewOrdenCompraItem {
+    almacenId: number;
     productoId: number;
     cantidad: number;
     precioUnitario: number;
@@ -28,7 +29,7 @@ export async function createOrdenCompra(
 
         const ordenId = (insertOrdenResult as ResultSetHeader).insertId;
         const insertItemsSql = await connection.prepare(
-            `INSERT INTO ordenesCompraItems (ordenId, productoId, cantidad, precioUnitario, total) VALUES (?, ?, ?, ?, ?)`,
+            `INSERT INTO ordenesCompraItems (ordenId, almacenId, productoId, cantidad, precioUnitario, total) VALUES (?, ?, ?, ?, ?, ?)`,
         );
 
         const movimientosSql = await connection.prepare(
@@ -36,6 +37,7 @@ export async function createOrdenCompra(
                 (   
                     fecha,
                     operadorId,
+                    almacenDestinoId,
                     productoId,
                     estadoDestino,
                     tipo,
@@ -50,13 +52,14 @@ export async function createOrdenCompra(
                     ?,
                     ?,
                     ?,
+                    ?,
                     ?
                 )`,
         );
 
         const productosStockSql = await connection.prepare(
-            `INSERT INTO productoStocks (productoId, estado, cantidad) 
-            VALUES (?, ?, ?) 
+            `INSERT INTO productoStocks (almacenId, productoId, estado, cantidad) 
+            VALUES (?, ?, ?, ?) 
             ON DUPLICATE KEY UPDATE cantidad = cantidad + ?`,
         );
 
@@ -65,6 +68,7 @@ export async function createOrdenCompra(
                 .map((item) =>
                     insertItemsSql.execute([
                         ordenId,
+                        item.almacenId,
                         item.productoId,
                         item.cantidad,
                         item.precioUnitario,
@@ -76,6 +80,7 @@ export async function createOrdenCompra(
                         movimientosSql.execute([
                             fechaSql,
                             operadorId,
+                            item.almacenId,
                             item.productoId,
                             PRODUCTO_ESTADO.BUENO,
                             MOVIMIENTO_INVENTARIO_TIPO.ENTRADA,
@@ -87,6 +92,7 @@ export async function createOrdenCompra(
                 .concat(
                     items.map((item) =>
                         productosStockSql.execute([
+                            item.almacenId,
                             item.productoId,
                             PRODUCTO_ESTADO.BUENO,
                             item.cantidad,

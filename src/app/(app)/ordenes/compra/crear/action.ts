@@ -13,7 +13,7 @@ const schema = z.object({
         .array(
             z.object({
                 productoId: z.number().int().positive(),
-                // almacenId: z.number().int().positive(),
+                almacenId: z.number().int().positive(),
                 precioUnitario: z.number().positive(),
                 cantidad: z.number().int().positive(),
             }),
@@ -28,13 +28,11 @@ export async function crearOrdenCompra(prevState: any, formData: FormData) {
     for (let index = 0; index < itemCount; index++) {
         items.push({
             productoId: parseInt((formData.get(`items[${index}].productoId`) as string) ?? ""),
-            // almacenId: parseInt((formData.get(`items[${index}].almacenId`) as string) ?? ""),
+            almacenId: parseInt((formData.get(`items[${index}].almacenId`) as string) ?? ""),
             precioUnitario: parseFloat((formData.get(`items[${index}].precioUnitario`) as string) ?? "0"),
             cantidad: parseInt((formData.get(`items[${index}].cantidad`) as string) ?? "0"),
         });
     }
-
-    // console.log("formData", formData, "itemCount", itemCount, "items", items)
 
     const validatedFields = schema.safeParse({
         proveedorId: parseInt(formData.get("proveedorId") as string),

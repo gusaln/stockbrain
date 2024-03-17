@@ -5,7 +5,7 @@ import Input from "@/components/forms/Input";
 import { useFormState } from "react-dom";
 import { crearOrdenConsumo } from "./action";
 import Select from "@/components/forms/Select";
-import { Producto } from "@/lib/queries/shared";
+import { Almacen, Producto } from "@/lib/queries/shared";
 import { PlusCircleIcon } from "@heroicons/react/16/solid";
 import { uniqueId } from "lodash";
 import { useState } from "react";
@@ -16,12 +16,14 @@ const initialState = {
 };
 
 interface Props {
+    almacenes: Almacen[];
     productos: Producto[];
     onSubmit: typeof crearOrdenConsumo;
 }
 
 interface Item {
     _id: string;
+    almacenId: number;
     productoId: number;
     cantidad: number;
 }
@@ -36,6 +38,7 @@ export default function Form(props: Props) {
             ...items,
             {
                 _id: uniqueId(),
+                almacenId: props.almacenes.length == 1 ? props.almacenes[0].id : null,
                 productoId: 0,
                 cantidad: "",
             },
@@ -72,11 +75,20 @@ export default function Form(props: Props) {
                         return (
                             <li className="grid grid-cols-4 gap-2" key={item._id}>
                                 <Select
+                                    name={`items[${index}].almacenId`}
+                                    label="almacen"
+                                    selected={item.almacenId}
+                                    onSelectChanged={(id) => handleItemChange(item, { almacenId: id })}
+                                    options={props.almacenes}
+                                    text={(almacen) => almacen.nombre}
+                                    option={(almacen, index) => almacen.nombre}
+                                    optionValue={(p) => p.id}
+                                />
+                                <Select
                                     name={`items[${index}].productoId`}
                                     label="Producto"
                                     selected={item.productoId}
                                     onSelectChanged={(id) => handleItemChange(item, { productoId: id })}
-                                    // onChange={(ev) => setCategoriaId(ev.target.value)}
                                     value={item.productoId}
                                     options={props.productos}
                                     text={(producto) => `${producto.marca} | ${producto.modelo}`}
@@ -92,7 +104,6 @@ export default function Form(props: Props) {
                                     onChange={(ev) => handleItemChange(item, { cantidad: parseInt(ev.target.value) })}
                                     errors={state.errors?.items}
                                 />
-
                             </li>
                         );
                     })}

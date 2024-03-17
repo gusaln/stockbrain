@@ -2,12 +2,12 @@
 import { Loader } from "@/components/Loader";
 import { PaginationSteps, usePagination } from "@/components/pagination";
 import { formatDatetime } from "@/lib/format";
-import { MovimientoInventario, getProductoEstadoLabel } from "@/lib/queries/shared";
+import { MovimientoInventarioWithRelations, getProductoEstadoLabel } from "@/lib/queries/shared";
 import { PaginatedResponse } from "@/utils";
 import { ArrowRightCircleIcon, ExclamationCircleIcon } from "@heroicons/react/16/solid";
 import { useQuery } from "@tanstack/react-query";
 
-export function MovimientoOrigen({ movimiento }: { movimiento: MovimientoInventario }) {
+export function MovimientoOrigen({ movimiento }: { movimiento: MovimientoInventarioWithRelations }) {
     if (movimiento.estadoOrigen) {
         return (
             <>
@@ -24,6 +24,23 @@ export function MovimientoOrigen({ movimiento }: { movimiento: MovimientoInventa
     return <span>{getProductoEstadoLabel(movimiento.estadoDestino)} </span>;
 }
 
+export function MovimientoAlmacen({ movimiento }: { movimiento: MovimientoInventarioWithRelations }) {
+    if (movimiento.almacenOrigenId) {
+        return (
+            <>
+                <span>{movimiento.almacenOrigen.nombre} </span>
+                <span>
+                    {" "}
+                    <ArrowRightCircleIcon width="16" />{" "}
+                </span>
+                <span>{movimiento.almacenDestino.nombre} </span>
+            </>
+        );
+    }
+
+    return <span>{movimiento.almacenDestino.nombre} </span>;
+}
+
 export function Table() {
     const { page, setPage, limit, setLimit } = usePagination();
 
@@ -38,14 +55,14 @@ export function Table() {
             });
 
             const res = await fetch(queryKey[0] + "?" + url.toString());
-            return (await res.json()) as PaginatedResponse<MovimientoInventario>;
+            return (await res.json()) as PaginatedResponse<MovimientoInventarioWithRelations>;
         },
         initialData: {
             data: [],
             page: 1,
             limit: 10,
             total: 0,
-        } as PaginatedResponse<MovimientoInventario>,
+        } as PaginatedResponse<MovimientoInventarioWithRelations>,
     });
 
     if (data.data.length < 1 && isFetching) return <Loader />;
@@ -63,6 +80,7 @@ export function Table() {
                 <tr>
                     <th>Operador</th>
                     <th>Fecha</th>
+                    <th>Almacén</th>
                     <th>Producto</th>
                     <th>Estado</th>
                     <th>Tipo</th>
@@ -77,8 +95,15 @@ export function Table() {
                         <tr key={movimiento.id}>
                             <td>{movimiento.operador.nombre}</td>
                             <td>{formatDatetime(movimiento.fecha)}</td>
-                            <td>{movimiento.producto.marca} {movimiento.producto.modelo}</td>
-                            <td><MovimientoOrigen movimiento={movimiento} /> </td>
+                            <td>
+                                <MovimientoAlmacen movimiento={movimiento} />{" "}
+                            </td>
+                            <td>
+                                {movimiento.producto.marca} {movimiento.producto.modelo}
+                            </td>
+                            <td>
+                                <MovimientoOrigen movimiento={movimiento} />{" "}
+                            </td>
                             <td>{movimiento.tipoNombre}</td>
                             <td>{movimiento.cantidad}</td>
                             <th></th>

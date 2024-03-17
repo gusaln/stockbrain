@@ -1,9 +1,10 @@
 import ResponsiveLayout, { LinkAction } from "@/components/layouts/ResponsiveLayout";
 import CrearOrdenConsumoForm from "./CrearOrdenConsumoForm";
 import { crearOrdenConsumo } from "./action";
-import { getProductos } from "@/lib/queries";
+import { getAlmacenes, getProductos } from "@/lib/queries";
 
 export default async function Page() {
+    const almacenes = (await getAlmacenes(undefined, { page: 1, limit: 100 })).data;
     const productos = (await getProductos(undefined, { page: 1, limit: 100 })).data;
 
     return (
@@ -15,7 +16,7 @@ export default async function Page() {
         >
             <section className="w-full justify-center flex">
                 <div className="card w-fit shadow-lg">
-                    <CrearOrdenConsumoForm productos={productos} onSubmit={crearOrdenConsumo} />
+                    <CrearOrdenConsumoForm almacenes={almacenes} productos={productos} onSubmit={crearOrdenConsumo} />
                 </div>
             </section>
         </ResponsiveLayout>

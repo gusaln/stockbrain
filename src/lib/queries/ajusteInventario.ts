@@ -14,6 +14,7 @@ import { formatForSql } from "./utils";
 export async function createAjusteInventario(
     operadorId: number,
     fecha: Date,
+    almacenId: number,
     productoId: number,
     tipo: AjusteInventarioTipo,
     cantidad: number,
@@ -23,8 +24,8 @@ export async function createAjusteInventario(
 
     const ajusteId = await runQuery(async function (connection) {
         const [result] = await connection.query(
-            "INSERT INTO ajustesInventario (operadorId, fecha, productoId, tipo, cantidad, motivo) VALUES (?, ?, ?, ?, ?, ?)",
-            [operadorId, fechaSql, productoId, tipo, cantidad, motivo],
+            "INSERT INTO ajustesInventario (operadorId, fecha, almacenId, productoId, tipo, cantidad, motivo) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            [operadorId, fechaSql, almacenId, productoId, tipo, cantidad, motivo],
         );
 
         const ajusteId = (result as ResultSetHeader).insertId;
@@ -35,6 +36,7 @@ export async function createAjusteInventario(
                 (   
                     fecha,
                     operadorId,
+                    almacenDestinoId,
                     productoId,
                     estadoDestino,
                     tipo,
@@ -49,11 +51,13 @@ export async function createAjusteInventario(
                     ?,
                     ?,
                     ?,
+                    ?,
                     ?
                 )`,
             [
                 fechaSql,
                 operadorId,
+                almacenId,
                 productoId,
                 PRODUCTO_ESTADO.BUENO,
                 MOVIMIENTO_INVENTARIO_TIPO.AJUSTE,
@@ -63,8 +67,8 @@ export async function createAjusteInventario(
         );
 
         await connection.query(
-            `INSERT INTO productoStocks (productoId, estado, cantidad) 
-            VALUES (?, ?, ?) 
+            `INSERT INTO productoStocks (almacenId, productoId, estado, cantidad) 
+            VALUES (?, ?, ?, ?) 
             ON DUPLICATE KEY UPDATE cantidad = cantidad + ?`,
             [productoId, PRODUCTO_ESTADO.BUENO, delta, delta],
         );
@@ -105,10 +109,12 @@ export async function getAjustesInventarioWithRelations(search = undefined, pagi
             `SELECT 
                 ajustesInventario.*,
                 usuarios.nombre as operador_nombre,
+                almacenes.nombre as almacen_nombre,
                 productos.marca as producto_marca,
                 productos.modelo as producto_modelo
             FROM ajustesInventario 
             LEFT JOIN usuarios ON ajustesInventario.operadorId = usuarios.id
+            LEFT JOIN almacenes ON ajustesInventario.almacenId = almacenes.id
             LEFT JOIN productos ON ajustesInventario.productoId = productos.id
             ORDER BY fecha DESC
             LIMIT ?, ?`,
@@ -126,10 +132,10 @@ export async function getAjustesInventarioWithRelations(search = undefined, pagi
                 id: ajuste.operadorId,
                 nombre: ajuste.operador_nombre,
             },
-            // almacen: {
-            //     id: ajuste.almacenId,
-            //     nombre: ajuste.almacen_nombre
-            // },
+            almacen: {
+                id: ajuste.almacenId,
+                nombre: ajuste.almacen_nombre,
+            },
             producto: {
                 id: ajuste.productoId,
                 marca: ajuste.producto_marca,
@@ -152,10 +158,10 @@ export type AjusteInventarioWithRelations = AjusteInventario & {
         id: number;
         nombre: string;
     };
-    // almacen: {
-    //     id: number,
-    //     nombre: string
-    // },
+    almacen: {
+        id: number;
+        nombre: string;
+    };
     producto: {
         id: number;
         marca: string;

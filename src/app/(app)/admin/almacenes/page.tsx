@@ -6,7 +6,7 @@ export default function Page() {
         <ResponsiveLayout
             title="Almacenes"
             acciones={() => {
-                return <LinkAction href="/almacenes/crear">Nuevo</LinkAction>;
+                return <LinkAction href="/admin/almacenes/crear">Nuevo</LinkAction>;
             }}
         >
             <section className="card w-full shadow-md">

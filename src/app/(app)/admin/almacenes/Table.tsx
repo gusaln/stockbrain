@@ -11,7 +11,7 @@ export function Table() {
     const { page, setPage, limit, setLimit } = usePagination();
 
     const { data, error, isFetching, isError } = useQuery({
-        queryKey: ["/almacenes/api", { page: page, limit: limit }],
+        queryKey: ["/admin/almacenes/api", { page: page, limit: limit }],
         queryFn: async ({ queryKey }) => {
             const url = new URLSearchParams({
                 page: queryKey[1].page.toString(),

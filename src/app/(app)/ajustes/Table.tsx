@@ -47,7 +47,7 @@ export function Table() {
                 <tr>
                     <th>Operador</th>
                     <th>Fecha</th>
-                    {/* <th>Almacén</th> */}
+                    <th>Almacén</th>
                     <th>Producto</th>
                     <th>Tipo</th>
                     <th>Cantidad</th>
@@ -62,7 +62,7 @@ export function Table() {
                         <tr key={ajuste.id}>
                             <td>{ajuste.operador.nombre}</td>
                             <td>{formatDatetime(ajuste.fecha)}</td>
-                            {/* <td>{ajuste.almacen.nombre}</td> */}
+                            <td>{ajuste.almacen.nombre}</td>
                             <td>{ajuste.producto.marca} - {ajuste.producto.modelo}</td>
                             <td>{AjusteInventarioTipoMap.get(ajuste.tipo)}</td>
                             <td>{ajuste.cantidad}</td>

@@ -2,7 +2,7 @@
 
 import Input from "@/components/forms/Input";
 import Select from "@/components/forms/Select";
-import { Producto } from "@/lib/queries/shared";
+import { Almacen, Producto } from "@/lib/queries/shared";
 import { useState } from "react";
 import { useFormState } from "react-dom";
 import { crearAjuste } from "./action";
@@ -15,6 +15,7 @@ const initialState = {
 };
 
 interface Props {
+    almacenes: Almacen[];
     productos: Producto[];
     onSubmit: typeof crearAjuste;
 }
@@ -22,6 +23,7 @@ interface Props {
 export default function Form(props: Props) {
     const [state, formAction] = useFormState(props.onSubmit, initialState);
 
+    const [almacenId, setAlmacenId] = useState(props.almacenes.length == 1 ? props.almacenes[0].id : null );
     const [productoId, setProductoId] = useState(null as number | null);
 
     return (
@@ -32,14 +34,24 @@ export default function Form(props: Props) {
                 <FormError message={state.message}/>
 
                 <Input name="fecha" label="Fecha (formato: 2024-12-31)" errors={state.errors?.fecha} />
-                {/* <Input name="almacen" label="Almacén" errors={state.errors?.almacenId} /> */}
+
+                <Select
+                    name="almacenId"
+                    label="almacen"
+                    selected={almacenId}
+                    onSelectChanged={(pId) => setAlmacenId(pId)}
+                    errors={state.errors?.almacenId}
+                    options={props.almacenes}
+                    text={(almacen) => almacen.nombre}
+                    option={(almacen, index) => almacen.nombre}
+                    optionValue={(p) => p.id}
+                />
 
                 <Select
                     name="productoId"
                     label="Producto"
                     selected={productoId}
                     onSelectChanged={(pId) => setProductoId(pId)}
-                    // onChange={(ev) => setProductoId(ev.target.value)}
                     errors={state.errors?.productoId}
                     options={props.productos}
                     text={(producto) => `${producto.marca} ${producto.modelo}`}

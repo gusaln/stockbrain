@@ -1,15 +1,14 @@
 "use client";
 
+import { FormError } from "@/components/forms/FormError";
 import Input from "@/components/forms/Input";
 import Select from "@/components/forms/Select";
-import { Producto, Proveedor } from "@/lib/queries/shared";
+import { Almacen, Producto, Proveedor } from "@/lib/queries/shared";
 import { PlusCircleIcon } from "@heroicons/react/16/solid";
 import { uniqueId } from "lodash";
 import { useState } from "react";
 import { useFormState } from "react-dom";
 import { crearOrdenCompra } from "./action";
-import { FormError } from "@/components/forms/FormError";
-import DatePickerInput from "@/components/forms/DatePickerInput";
 
 const initialState = {
     message: "",
@@ -18,12 +17,14 @@ const initialState = {
 
 interface Props {
     proveedores: Proveedor[];
+    almacenes: Almacen[];
     productos: Producto[];
     onSubmit: typeof crearOrdenCompra;
 }
 
 interface Item {
     _id: string;
+    almacenId: number;
     productoId: number;
     cantidad: number;
     precioUnitario: number;
@@ -41,6 +42,7 @@ export default function Form(props: Props) {
             ...items,
             {
                 _id: uniqueId(),
+                almacenId: props.almacenes.length == 1 ? props.almacenes[0].id : null,
                 productoId: 0,
                 cantidad: "",
                 precioUnitario: "",
@@ -65,7 +67,7 @@ export default function Form(props: Props) {
             <div className="card-body">
                 <div className="card-title">Indique los datos de la orden de compra</div>
 
-                <FormError message={state.message}/>
+                <FormError message={state.message} />
 
                 <Select
                     name="proveedorId"
@@ -79,7 +81,7 @@ export default function Form(props: Props) {
                     option={(proveedor, index) => proveedor.nombre}
                     optionValue={(c) => c.id}
                 />
-                <Input name="fecha" label="Fecha (formato: 2024-12-31)" errors={state.errors?.fecha}  />
+                <Input name="fecha" label="Fecha (formato: 2024-12-31)" errors={state.errors?.fecha} />
 
                 <input name="__itemCount" value={items.length} type="hidden" />
 
@@ -88,16 +90,28 @@ export default function Form(props: Props) {
                         return (
                             <li className="grid grid-cols-4 gap-2" key={item._id}>
                                 <Select
+                                    name={`items[${index}].almacenId`}
+                                    label="Almacén"
+                                    selected={item.almacenId}
+                                    onSelectChanged={(id) => handleItemChange(item, { almacenId: id })}
+                                    options={props.almacenes}
+                                    text={(almacen) => almacen.nombre}
+                                    option={(almacen, index) => almacen.nombre}
+                                    optionValue={(p) => p.id}
+                                    errors={state.errors?.items}
+                                />
+
+                                <Select
                                     name={`items[${index}].productoId`}
                                     label="Producto"
                                     selected={item.productoId}
                                     onSelectChanged={(id) => handleItemChange(item, { productoId: id })}
-                                    // onChange={(ev) => setCategoriaId(ev.target.value)}
                                     value={item.productoId}
                                     options={props.productos}
                                     text={(producto) => `${producto.marca} | ${producto.modelo}`}
                                     option={(producto, index) => `${producto.marca} | ${producto.modelo}`}
                                     optionValue={(c) => c.id}
+                                    errors={state.errors?.items}
                                 />
 
                                 <Input

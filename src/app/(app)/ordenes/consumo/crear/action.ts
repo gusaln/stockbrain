@@ -12,6 +12,7 @@ const schema = z.object({
     items: z
         .array(
             z.object({
+                almacenId: z.number().int().positive(),
                 productoId: z.number().int().positive(),
                 cantidad: z.number().int().positive(),
             }),
@@ -25,6 +26,7 @@ export async function crearOrdenConsumo(prevState: any, formData: FormData) {
     const itemCount = Number.parseInt((formData.get("__itemCount") as string) ?? "0", 10);
     for (let index = 0; index < itemCount; index++) {
         items.push({
+            almacenId: parseInt((formData.get(`items[${index}].almacenId`) as string) ?? ""),
             productoId: parseInt((formData.get(`items[${index}].productoId`) as string) ?? ""),
             cantidad: parseInt((formData.get(`items[${index}].cantidad`) as string) ?? "0"),
         });
