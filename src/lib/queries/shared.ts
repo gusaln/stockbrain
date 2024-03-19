@@ -119,6 +119,7 @@ export interface AjusteInventario {
     fecha: string;
     almacenId: number;
     productoId: number;
+    estado: ProductoEstado;
     tipo: AjusteInventarioTipo;
     cantidad: number;
     motivo: string;

@@ -1,12 +1,13 @@
 "use client";
 
+import { FormError } from "@/components/forms/FormError";
 import Input from "@/components/forms/Input";
+import { ProductoEstadoCheckbox } from "@/components/forms/ProductoEstadosCheckbox";
 import Select from "@/components/forms/Select";
 import { Almacen, Producto } from "@/lib/queries/shared";
 import { useState } from "react";
 import { useFormState } from "react-dom";
 import { crearAjuste } from "./action";
-import { FormError } from "@/components/forms/FormError";
 // import { AJUSTE_INVENTARIO_TIPO } from "@/lib/queries";
 
 const initialState = {
@@ -23,7 +24,7 @@ interface Props {
 export default function Form(props: Props) {
     const [state, formAction] = useFormState(props.onSubmit, initialState);
 
-    const [almacenId, setAlmacenId] = useState(props.almacenes.length == 1 ? props.almacenes[0].id : null );
+    const [almacenId, setAlmacenId] = useState(props.almacenes.length == 1 ? props.almacenes[0].id : null);
     const [productoId, setProductoId] = useState(null as number | null);
 
     return (
@@ -31,7 +32,7 @@ export default function Form(props: Props) {
             <div className="card-body w-full">
                 <div className="card-title">Indique los datos del nuevo ajuste de inventario</div>
 
-                <FormError message={state.message}/>
+                <FormError message={state.message} />
 
                 <Input name="fecha" label="Fecha (formato: 2024-12-31)" errors={state.errors?.fecha} />
 
@@ -58,6 +59,8 @@ export default function Form(props: Props) {
                     option={(producto, index) => `${producto.marca} ${producto.modelo}`}
                     optionValue={(p) => p.id}
                 />
+
+                <ProductoEstadoCheckbox name="estado" />
 
                 <div className="form-control">
                     <label className="label cursor-pointer">

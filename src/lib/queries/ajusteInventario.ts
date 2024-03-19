@@ -7,15 +7,16 @@ import {
     AjusteInventarioTipo,
     AjusteInventarioTipoMap,
     MOVIMIENTO_INVENTARIO_TIPO,
-    PRODUCTO_ESTADO,
+    ProductoEstado,
 } from "./shared";
-import { formatForSql } from "./utils";
+import { formatForSql, parseDateFromInput } from "./utils";
 
 export async function createAjusteInventario(
     operadorId: number,
     fecha: Date,
     almacenId: number,
     productoId: number,
+    estado: ProductoEstado,
     tipo: AjusteInventarioTipo,
     cantidad: number,
     motivo: string,
@@ -24,7 +25,7 @@ export async function createAjusteInventario(
 
     const ajusteId = await runQuery(async function (connection) {
         const [result] = await connection.query(
-            "INSERT INTO ajustesInventario (operadorId, fecha, almacenId, productoId, tipo, cantidad, motivo) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO ajustesInventario (operadorId, fecha, almacenId, productoId, estado, tipo, cantidad, motivo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
             [operadorId, fechaSql, almacenId, productoId, tipo, cantidad, motivo],
         );
 
@@ -54,23 +55,14 @@ export async function createAjusteInventario(
                     ?,
                     ?
                 )`,
-            [
-                fechaSql,
-                operadorId,
-                almacenId,
-                productoId,
-                PRODUCTO_ESTADO.BUENO,
-                MOVIMIENTO_INVENTARIO_TIPO.AJUSTE,
-                ajusteId,
-                delta,
-            ],
+            [fechaSql, operadorId, almacenId, productoId, estado, MOVIMIENTO_INVENTARIO_TIPO.AJUSTE, ajusteId, delta],
         );
 
         await connection.query(
             `INSERT INTO productoStocks (almacenId, productoId, estado, cantidad) 
             VALUES (?, ?, ?, ?) 
             ON DUPLICATE KEY UPDATE cantidad = cantidad + ?`,
-            [productoId, PRODUCTO_ESTADO.BUENO, delta, delta],
+            [almacenId, productoId, estado, delta, delta],
         );
 
         return ajusteId;
@@ -179,31 +171,74 @@ export async function findAjusteInventario(id: number) {
     return data as AjusteInventario | null;
 }
 
-export async function updateAjusteInventario(id: number, ajusteInventario: Exclude<AjusteInventario, "id">) {
-    const [data, dataField] = await runQuery(async function (connection) {
+export async function updateAjusteInventario(
+    id: number,
+    modificado: Omit<AjusteInventario, "id" | "operadorId">,
+    operadorId: number,
+) {
+    const anterior = (await findAjusteInventario(id)) as AjusteInventario;
+    const deltaCantidad = modificado.cantidad - anterior?.cantidad;
+    await runQuery(async function (connection) {
+        const fechaSql = formatForSql(parseDateFromInput(modificado.fecha));
         const [dataRes, dataField] = await connection.query(
             `UPDATE ajustesInventario 
             SET 
                 operadorId = ?, 
+                almacenId = ?, 
                 fecha = ?, 
                 productoId = ?, 
+                estado = ?, 
                 tipo = ?, 
                 cantidad = ?,
                 motivo = ?
             WHERE id = ?`,
             [
-                ajusteInventario.operadorId,
-                ajusteInventario.fecha,
-                ajusteInventario.productoId,
-                ajusteInventario.tipo,
-                ajusteInventario.cantidad,
-                ajusteInventario.motivo,
+                operadorId,
+                modificado.almacenId,
+                fechaSql,
+                modificado.productoId,
+                modificado.estado,
+                modificado.tipo,
+                modificado.cantidad,
+                modificado.motivo,
                 id,
             ],
         );
 
-        return [dataRes[0], dataField];
-    });
+        await connection.query(
+            `UPDATE movimientosInventario 
+                SET    
+                    fecha = ?,
+                    operadorId = ?,
+                    almacenDestinoId = ?,
+                    productoId = ?,
+                    estadoDestino = ?,
+                    cantidad = ?,
+                    fueEditado = 1
+                WHERE ajusteId = ?`,
+            [
+                fechaSql,
+                operadorId,
+                modificado.almacenId,
+                modificado.productoId,
+                modificado.estado,
+                modificado.cantidad,
+                id,
+            ],
+        );
 
-    return data as AjusteInventario | null;
+        await connection.query(
+            `INSERT INTO productoStocks (almacenId, productoId, estado, cantidad) 
+            VALUES (?, ?, ?, -1 * ?) 
+            ON DUPLICATE KEY UPDATE cantidad = cantidad - ?`,
+            [anterior.almacenId, anterior.productoId, anterior.estado, anterior.cantidad, anterior.cantidad],
+        );
+
+        await connection.query(
+            `INSERT INTO productoStocks (almacenId, productoId, estado, cantidad) 
+            VALUES (?, ?, ?, ?) 
+            ON DUPLICATE KEY UPDATE cantidad = cantidad + ?`,
+            [modificado.almacenId, modificado.productoId, modificado.estado, deltaCantidad, deltaCantidad],
+        );
+    });
 }

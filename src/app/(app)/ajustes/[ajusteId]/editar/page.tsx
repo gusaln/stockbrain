@@ -1,5 +1,5 @@
 import ResponsiveLayout, { LinkAction } from "@/components/layouts/ResponsiveLayout";
-import { findAjusteInventario } from "@/lib/queries";
+import { findAjusteInventario, getAlmacenes, getProductos } from "@/lib/queries";
 import { findAlmacen } from "@/lib/queries";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -16,10 +16,10 @@ export function bindAjusteId(ajusteId: number) {
 
 export default async function Page({ params }: { params: { ajusteId: number } }) {
     const ajuste = await findAjusteInventario(params.ajusteId);
-    const almacen = await findAlmacen();
+    const almacenes = (await getAlmacenes(undefined, { limit: 100 })).data;
+    const productos = (await getProductos(undefined, { page: 1, limit: 100 })).data;
 
-
-    if (!ajuste || !almacen) {
+    if (!ajuste) {
         return notFound();
     }
 
@@ -34,7 +34,12 @@ export default async function Page({ params }: { params: { ajusteId: number } })
         >
             <section className="w-full justify-center flex">
                 <div className="card w-fit shadow-lg">
-                    <EditarForm ajuste={ajuste} almacenes={almacen} onSubmit={editarAjusteWithId} />
+                    <EditarForm
+                        ajuste={ajuste}
+                        almacenes={almacenes}
+                        productos={productos}
+                        onSubmit={editarAjusteWithId}
+                    />
                 </div>
             </section>
         </ResponsiveLayout>
