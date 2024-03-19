@@ -50,14 +50,15 @@ export function OrdenesCompraTable() {
             </thead>
 
             <tbody>
-                {data.data?.map((p) => {
+                {data.data?.map((orden) => {
                     return (
-                        <tr key={p.id}>
-                            <td>{formatDatetime(p.fecha)}</td>
-                            <td>{p.proveedor.nombre}</td>
-                            <td>{p.operador.nombre}</td>
+                        <tr key={orden.id}>
+                            <td>{formatDatetime(orden.fecha)}</td>
+                            <td>{orden.proveedor.nombre}</td>
+                            <td>{orden.operador.nombre}</td>
                             <th>
-                                <button className="btn btn-ghost btn-sm">editar</button>
+                                <a href={`/ordenes/compra/${orden.id}`} className="btn btn-ghost btn-sm">detalles</a>
+                                <a href={`/ordenes/compra/${orden.id}/editar`} className="btn btn-ghost btn-sm">editar</a>
                             </th>
                         </tr>
                     );

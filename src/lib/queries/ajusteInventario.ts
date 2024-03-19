@@ -177,7 +177,6 @@ export async function updateAjusteInventario(
     operadorId: number,
 ) {
     const anterior = (await findAjusteInventario(id)) as AjusteInventario;
-    const deltaCantidad = modificado.cantidad - anterior?.cantidad;
     await runQuery(async function (connection) {
         const fechaSql = formatForSql(parseDateFromInput(modificado.fecha));
         const [dataRes, dataField] = await connection.query(
@@ -214,7 +213,7 @@ export async function updateAjusteInventario(
                     productoId = ?,
                     estadoDestino = ?,
                     cantidad = ?,
-                    fueEditado = 1
+                    fueEditada = 1
                 WHERE ajusteId = ?`,
             [
                 fechaSql,
@@ -238,7 +237,7 @@ export async function updateAjusteInventario(
             `INSERT INTO productoStocks (almacenId, productoId, estado, cantidad) 
             VALUES (?, ?, ?, ?) 
             ON DUPLICATE KEY UPDATE cantidad = cantidad + ?`,
-            [modificado.almacenId, modificado.productoId, modificado.estado, deltaCantidad, deltaCantidad],
+            [modificado.almacenId, modificado.productoId, modificado.estado, modificado.cantidad, modificado.cantidad],
         );
     });
 }

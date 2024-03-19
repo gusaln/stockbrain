@@ -47,7 +47,7 @@ export async function findProveedor(id: number) {
     return data as Proveedor | null;
 }
 
-export async function updateProveedor(id: number, proveedor: Exclude<Proveedor, "id">) {
+export async function updateProveedor(id: number, proveedor: Omit<Proveedor, "id">) {
     const [data, dataField] = await runQuery(async function (connection) {
         const [dataRes, dataField] = await connection.query(
             `UPDATE proveedores 

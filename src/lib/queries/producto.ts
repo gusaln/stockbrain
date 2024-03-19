@@ -1,5 +1,5 @@
 import { groupBy } from "lodash";
-import { PoolConnection, ResultSetHeader } from "mysql2/promise";
+import { Connection, PoolConnection, ResultSetHeader } from "mysql2/promise";
 import { runQuery } from "../db";
 import { Pagination } from "./pagination";
 import {
@@ -27,19 +27,19 @@ export async function createProducto(
     return (result as ResultSetHeader).insertId;
 }
 
-export async function calcularStockQuery(connection: PoolConnection, almcadenId: number, productoId: number) {
-    const insert = await connection.prepare(
-        `INSERT INTO productoStocks (almacenId, productoId, estado, cantidad) 
-        VALUES (?, ?, ?, 0)
-        ON DUPLICATE KEY UPDATE cantidad = 0`,
-    );
+export async function calcularStocksDeUnoQuery(connection: PoolConnection | Connection, productoId: number) {
+    // const insert = await connection.prepare(
+    //     `INSERT INTO productoStocks (almacenId, productoId, estado, cantidad)
+    //     VALUES (?, ?, ?, 0)
+    //     ON DUPLICATE KEY UPDATE cantidad = 0`,
+    // );
 
-    await Promise.all(Object.values(PRODUCTO_ESTADO).map((estado) => insert.execute([almcadenId, productoId, estado])));
+    // await Promise.all(Object.values(PRODUCTO_ESTADO).map((estado) => insert.execute([almacenId, productoId, estado])));
 
     // Calculamos el stock actual con los movimientos
     await connection.query(
         `UPDATE productoStocks 
-    JOIN (
+    LEFT JOIN (
         SELECT 
             m.almacenDestinoId as almacenId, 
             m.productoId, 
@@ -47,7 +47,6 @@ export async function calcularStockQuery(connection: PoolConnection, almcadenId:
             SUM(m.cantidad) as cantidad 
         FROM movimientosInventario as m
         WHERE 
-            m.almacenDestinoId = ? AND
             m.productoId = ?
         GROUP BY 
             m.almacenDestinoId, 
@@ -57,14 +56,14 @@ export async function calcularStockQuery(connection: PoolConnection, almcadenId:
         m_groupby.almacenId = productoStocks.almacenId AND 
         m_groupby.productoId = productoStocks.productoId AND 
         m_groupby.estado = productoStocks.estado
-    SET productoStocks.cantidad = m_groupby.cantidad`,
-        [almcadenId, productoId],
+    SET productoStocks.cantidad = IF(ISNULL(m_groupby.cantidad), 0, m_groupby.cantidad)`,
+        [productoId],
     );
 
     // En las transferencias tenemos que remover los
     await connection.query(
         `UPDATE productoStocks 
-    JOIN (
+    LEFT JOIN (
         SELECT 
             m.almacenOrigenId as almacenId, 
             m.productoId, 
@@ -82,8 +81,64 @@ export async function calcularStockQuery(connection: PoolConnection, almcadenId:
         m_groupby.almacenId = productoStocks.almacenId AND 
         m_groupby.productoId = productoStocks.productoId AND 
         m_groupby.estado = productoStocks.estado
-    SET productoStocks.cantidad = m_groupby.cantidad`,
-        [productoId, productoId],
+    SET productoStocks.cantidad = productoStocks.cantidad + IF(ISNULL(m_groupby.cantidad), 0, m_groupby.cantidad)`,
+        [productoId],
+    );
+}
+
+export async function calcularStocksTodosQuery(connection: PoolConnection | Connection) {
+    // const insert = await connection.prepare(
+    //     `INSERT INTO productoStocks (almacenId, productoId, estado, cantidad)
+    //     VALUES (?, ?, ?, 0)
+    //     ON DUPLICATE KEY UPDATE cantidad = 0`,
+    // );
+
+    // await Promise.all(Object.values(PRODUCTO_ESTADO).map((estado) => insert.execute([almacenId, productoId, estado])));
+
+    // Calculamos el stock actual con los movimientos
+    await connection.query(
+        `UPDATE productoStocks 
+    LEFT JOIN (
+        SELECT 
+            m.almacenDestinoId as almacenId, 
+            m.productoId, 
+            m.estadoDestino as estado, 
+            SUM(m.cantidad) as cantidad 
+        FROM movimientosInventario as m
+        GROUP BY 
+            m.almacenDestinoId, 
+            m.productoId, 
+            m.estadoDestino
+    ) AS m_groupby ON 
+        m_groupby.almacenId = productoStocks.almacenId AND 
+        m_groupby.productoId = productoStocks.productoId AND 
+        m_groupby.estado = productoStocks.estado
+    SET productoStocks.cantidad = IF(ISNULL(m_groupby.cantidad), 0, m_groupby.cantidad)`,
+        [],
+    );
+
+    // En las transferencias tenemos que remover los
+    await connection.query(
+        `UPDATE productoStocks 
+    LEFT JOIN (
+        SELECT 
+            m.almacenOrigenId as almacenId, 
+            m.productoId, 
+            m.estadoOrigen as estado, 
+            SUM(m.cantidad)*-1 as cantidad 
+        FROM movimientosInventario as m
+        WHERE 
+            m.estadoOrigen IS NOT NULL
+        GROUP BY 
+            m.almacenOrigenId, 
+            m.productoId, 
+            m.estadoOrigen
+    ) AS m_groupby ON 
+        m_groupby.almacenId = productoStocks.almacenId AND 
+        m_groupby.productoId = productoStocks.productoId AND 
+        m_groupby.estado = productoStocks.estado
+    SET productoStocks.cantidad = productoStocks.cantidad + IF(ISNULL(m_groupby.cantidad), 0, m_groupby.cantidad)`,
+        [],
     );
 }
 
@@ -159,7 +214,7 @@ export async function findProducto(id: number) {
     return data as Producto | null;
 }
 
-export async function updateProducto(id: number, producto: Exclude<Producto, "id">) {
+export async function updateProducto(id: number, producto: Omit<Producto, "id">) {
     const [data, dataField] = await runQuery(async function (connection) {
         const [dataRes, dataField] = await connection.query(
             `UPDATE productos 
@@ -271,19 +326,19 @@ export async function getMovimientosInventarioDelProducto(productoId: number, pa
             operadorId: movimiento.operadorId,
             operador: {
                 id: movimiento.operadorId,
-                nombre: movimiento.operador_nombre,
+                nombre: movimiento.operador_nombre as string,
             },
             almacenOrigenId: movimiento.almacenOrigenId,
             almacenOrigen: movimiento.almacenOrigenId
                 ? {
                       id: movimiento.almacenOrigenId,
-                      nombre: movimiento.almacen_origen_nombre,
+                      nombre: movimiento.almacen_origen_nombre as string,
                   }
                 : null,
             almacenDestinoId: movimiento.almacenDestinoId,
             almacenDestino: {
                 id: movimiento.almacenDestinoId,
-                nombre: movimiento.almacen_destino_nombre,
+                nombre: movimiento.almacen_destino_nombre as string,
             },
             productoId: movimiento.productoId,
             estadoOrigen: movimiento.estadoOrigen,
@@ -295,9 +350,6 @@ export async function getMovimientosInventarioDelProducto(productoId: number, pa
         total: total as number,
     };
 }
-export type MovimientoInventarioDeProductoWithRelations = MovimientoInventario & {
-    operador: {
-        id: number;
-        nombre: string;
-    };
-};
+export type MovimientoInventarioDeProductoWithRelations = Awaited<
+    ReturnType<typeof getMovimientosInventarioDelProducto>
+>["data"][number];

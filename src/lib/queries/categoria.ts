@@ -48,7 +48,7 @@ export async function findCategoria(id: number) {
     return data as Categoria | null;
 }
 
-export async function updateCategoria(id: number, categoria: Exclude<Categoria, "id">) {
+export async function updateCategoria(id: number, categoria: Omit<Categoria, "id">) {
     const [data, dataField] = await runQuery(async function (connection) {
         const [dataRes, dataField] = await connection.query(
             `UPDATE categorias 

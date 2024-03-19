@@ -58,7 +58,7 @@ export async function findAlmacen(id: number) {
     return data as Almacen | null;
 }
 
-export async function updateAlmacen(id: number, almacen: Exclude<Almacen, "id">) {
+export async function updateAlmacen(id: number, almacen: Omit<Almacen, "id">) {
     const [data, dataField] = await runQuery(async function (connection) {
         const [dataRes, dataField] = await connection.query(
             `UPDATE almacenes 

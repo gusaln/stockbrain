@@ -173,7 +173,7 @@ CREATE TABLE
         FOREIGN KEY (`almacenDestinoId`) REFERENCES `almacenes` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
         FOREIGN KEY (`productoId`) REFERENCES `productos` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
         FOREIGN KEY (`ordenCompraId`) REFERENCES `ordenesCompra` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-        FOREIGN KEY (`ordenConsumoId`) REFERENCES `ordenConsumoId` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+        FOREIGN KEY (`ordenConsumoId`) REFERENCES `ordenesConsumo` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
         FOREIGN KEY (`ajusteId`) REFERENCES `ajustesInventario` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
     );
 

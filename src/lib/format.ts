@@ -1,5 +1,8 @@
 import { format, parseISO } from "date-fns";
 
-export function formatDatetime(date: string) {
-    return format(parseISO(date), "dd/MM/yyyy");
+export function formatDatetime(date: Date | string) {
+    if (typeof date == "string") {
+        date = parseISO(date);
+    }
+    return format(date, "dd/MM/yyyy");
 }

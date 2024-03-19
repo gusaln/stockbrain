@@ -152,7 +152,7 @@ export async function findOrdenConsumo(id: number) {
     return data as OrdenConsumo | null;
 }
 
-export async function updateOrdenConsumo(id: number, ordenConsumo: Exclude<OrdenConsumo, "id">) {
+export async function updateOrdenConsumo(id: number, ordenConsumo: Omit<OrdenConsumo, "id">) {
     const [data, dataField] = await runQuery(async function (connection) {
         const [dataRes, dataField] = await connection.query(
             `UPDATE ordenesConsumo 

@@ -108,8 +108,8 @@ export default function Form(props: Props) {
                                     onSelectChanged={(id) => handleItemChange(item, { productoId: id })}
                                     value={item.productoId}
                                     options={props.productos}
-                                    text={(producto) => `${producto.marca} | ${producto.modelo}`}
-                                    option={(producto, index) => `${producto.marca} | ${producto.modelo}`}
+                                    text={(producto) => `${producto.modelo} | ${producto.marca}`}
+                                    option={(producto, index) => `${producto.modelo} | ${producto.marca}`}
                                     optionValue={(c) => c.id}
                                     errors={state.errors?.items}
                                 />

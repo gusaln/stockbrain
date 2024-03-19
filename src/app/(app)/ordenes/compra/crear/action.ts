@@ -8,7 +8,7 @@ import { redirect } from "next/navigation";
 
 const schema = z.object({
     proveedorId: z.number().int().positive(),
-    fecha: z.string().trim().max(64).datetime(),
+    fecha: z.string().trim().max(64).datetime({ offset: true }),
     items: z
         .array(
             z.object({
@@ -36,7 +36,7 @@ export async function crearOrdenCompra(prevState: any, formData: FormData) {
 
     const validatedFields = schema.safeParse({
         proveedorId: parseInt(formData.get("proveedorId") as string),
-        fecha: formData.get("fecha") + "T00:00:00Z",
+        fecha: formData.get("fecha") + "T00:00:00-04",
         items: items,
     });
 

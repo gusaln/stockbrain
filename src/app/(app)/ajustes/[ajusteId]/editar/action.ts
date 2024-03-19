@@ -17,7 +17,7 @@ const schema = z.object({
 
 export async function editarAjuste(ajusteId: number, prevState: any, formData: FormData) {
     const validatedFields = schema.safeParse({
-        fecha: formData.get("fecha") + "T00:00:00Z",
+        fecha: formData.get("fecha") + "T00:00:00-04",
         almacenId: parseInt(formData.get("almacenId") as string),
         productoId: parseInt(formData.get("productoId") as string),
         estado: parseInt(formData.get("estado") as string),

@@ -8,7 +8,7 @@ import { z } from "@/validation";
 import { redirect } from "next/navigation";
 
 const schema = z.object({
-    fecha: z.string().trim().max(64).datetime(),
+    fecha: z.string().trim().max(64).datetime({ offset: true }),
     almacenId: z.number().int().positive(),
     productoId: z.number().int().positive(),
     estado: z.number().int().positive(),
@@ -19,7 +19,7 @@ const schema = z.object({
 
 export async function crearAjuste(prevState: any, formData: FormData) {
     const validatedFields = schema.safeParse({
-        fecha: formData.get("fecha") + "T00:00:00Z",
+        fecha: formData.get("fecha") + "T00:00:00-04",
         almacenId: parseInt(formData.get("almacenId") as string),
         productoId: parseInt(formData.get("productoId") as string),
         estado: parseInt(formData.get("estado") as string),

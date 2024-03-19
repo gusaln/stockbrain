@@ -8,7 +8,7 @@ import { redirect } from "next/navigation";
 
 const schema = z.object({
     descripcion: z.string().trim().max(64),
-    fecha: z.string().trim().max(64).datetime(),
+    fecha: z.string().trim().max(64).datetime({ offset: true }),
     items: z
         .array(
             z.object({
@@ -35,7 +35,7 @@ export async function crearOrdenConsumo(prevState: any, formData: FormData) {
     // console.log("formData", formData, "itemCount", itemCount, "items", items)
 
     const validatedFields = schema.safeParse({
-        fecha: formData.get("fecha") + "T00:00:00Z",
+        fecha: formData.get("fecha") + "T00:00:00-04",
         items: items,
     });
 

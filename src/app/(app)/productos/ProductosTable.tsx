@@ -44,9 +44,9 @@ export function ProductosTable(){
         <table className="table table-sm">
             <thead>
                 <tr>
-                    <th>Categoria</th>
-                    <th>Marca</th>
                     <th>Modelo</th>
+                    <th>Marca</th>
+                    <th>Categoria</th>
                     <th>Descripción</th>
                     <th>Imagen</th>
                 </tr>
@@ -56,9 +56,9 @@ export function ProductosTable(){
                 {data.data?.map((p) =>{
                     return(
                         <tr key={p.id}>
-                            <td>{p.categoria.nombre}</td>
-                            <th>{p.marca}</th>
                             <th>{p.modelo}</th>
+                            <th>{p.marca}</th>
+                            <td>{p.categoria.nombre}</td>
                             <td>{p.descripcion}</td>
                             <td>{p.imagen ?? '-'}</td>
                             <th>

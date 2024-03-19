@@ -104,10 +104,7 @@ export async function findMovimientoInventario(id: number) {
     return data as MovimientoInventario | null;
 }
 
-export async function updateMovimientoInventario(
-    id: number,
-    movimientoInventario: Exclude<MovimientoInventario, "id">,
-) {
+export async function updateMovimientoInventario(id: number, movimientoInventario: Omit<MovimientoInventario, "id">) {
     const [data, dataField] = await runQuery(async function (connection) {
         const [dataRes, dataField] = await connection.query(
             `UPDATE movimientosInventario 
