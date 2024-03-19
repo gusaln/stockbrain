@@ -26,7 +26,7 @@ export async function createAjusteInventario(
     const ajusteId = await runQuery(async function (connection) {
         const [result] = await connection.query(
             "INSERT INTO ajustesInventario (operadorId, fecha, almacenId, productoId, estado, tipo, cantidad, motivo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-            [operadorId, fechaSql, almacenId, productoId, tipo, cantidad, motivo],
+            [operadorId, fechaSql, almacenId, productoId, estado, tipo, cantidad, motivo],
         );
 
         const ajusteId = (result as ResultSetHeader).insertId;

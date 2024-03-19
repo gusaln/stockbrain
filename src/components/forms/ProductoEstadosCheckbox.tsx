@@ -36,7 +36,7 @@ export function ProductoEstadoCheckbox(props: ProductoEstadoCheckboxProps) {
                             type="radio"
 {...rest}
                             className="radio checked:bg-primary"
-                            checked={props.value == e.value}
+                            checked={props.value == null ? undefined : props.value == e.value}
                             value={e.value}
                             onSelect={() => onSelected?.(e.value)}
                         />
