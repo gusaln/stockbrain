@@ -8,7 +8,8 @@ import { PlusCircleIcon } from "@heroicons/react/16/solid";
 import { uniqueId } from "lodash";
 import { useState } from "react";
 import { useFormState } from "react-dom";
-import { crearOrdenConsumo } from "./action";
+import { crearOrdenCompra } from "./action";
+import { PrinterIcon } from "@heroicons/react/24/solid";
 
 const initialState = {
     message: "",
@@ -19,7 +20,7 @@ interface Props {
     proveedores: Proveedor[];
     almacenes: Almacen[];
     productos: Producto[];
-    onSubmit: typeof crearOrdenConsumo;
+    onSubmit: typeof crearOrdenCompra;
 }
 
 interface Item {
@@ -64,7 +65,7 @@ export default function Form(props: Props) {
     return (
         <form action={formAction} method="post">
             <div className="card-body">
-                <div className="card-title">Indique los datos de la orden de consumo</div>
+                <div className="card-title">Indique los datos de la orden de compra</div>
 
                 <FormError message={state.message} />
 
@@ -113,6 +114,8 @@ export default function Form(props: Props) {
                                     errors={state.errors?.items}
                                 />
 
+
+
                                 <Input
                                     name={`items[${index}].cantidad`}
                                     label="Cantidad"
@@ -121,6 +124,18 @@ export default function Form(props: Props) {
                                     onChange={(ev) => handleItemChange(item, { cantidad: ev.target.value })}
                                     errors={state.errors?.items}
                                 />
+
+
+<Input
+                                    name={`items[${index}].precioUnitario`}
+                                    label="Precio"
+                                    type="number"
+                                    value={item.precioUnitario}
+                                    onChange={(ev) => handleItemChange(item, { precioUnitario: ev.target.value })}
+                                    errors={state.errors?.items}
+                                />
+
+                                <Input label="Total" value={item.precioUnitario * item.cantidad}/>
                             </li>
                         );
                     })}

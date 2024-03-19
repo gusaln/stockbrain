@@ -33,7 +33,7 @@ export default async function Page({ params }: { params: { ajusteId: number } })
             }}
         >
             <section className="w-full justify-center flex">
-                <div className="card w-fit shadow-lg">
+                <div className="card w-full shadow-lg">
                     <EditarForm
                         ajuste={ajuste}
                         almacenes={almacenes}

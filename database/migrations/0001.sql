@@ -127,7 +127,7 @@ CREATE TABLE
         `almacenId` BIGINT,
         `productoId` BIGINT,
         `cantidad` INT,
-        FOREIGN KEY (`ordenId`) REFERENCES `ordenesCompra` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
+        FOREIGN KEY (`ordenId`) REFERENCES `ordenesConsumo` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
         FOREIGN KEY (`almacenId`) REFERENCES `almacenes` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT,
         FOREIGN KEY (`productoId`) REFERENCES `productos` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
     );

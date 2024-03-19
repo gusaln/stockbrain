@@ -125,7 +125,7 @@ export default function Form({ ajuste, productos, almacenes, onSubmit }: Props) 
                     type="number"
                     name="cantidad"
                     label="Cantidad"
-                    onChange={(ev) => setCantidad(Number(ev.target.value))}
+                    onChange={(ev) => setCantidad((ev.target.value))}
                     value={cantidad}
                     errors={state.errors?.cantidad}
                 />

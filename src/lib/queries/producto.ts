@@ -170,25 +170,62 @@ export async function getProductos(search = undefined, pagination: Pagination = 
     };
 }
 
-export async function getProductosWithCategorias(search = undefined, pagination: Pagination = {}) {
+export async function getProductosWithCategorias(search: string, pagination: Pagination = {}) {
+    // console.log({ search });
+
     const limit = pagination.limit ?? 10;
     const offset = ((pagination.page ?? 1) - 1) * limit;
-    const [total, data] = await runQuery(async function (connection) {
-        const [countRes, countField] = await connection.query("SELECT COUNT(id) as total FROM productos");
 
-        const [dataRes, dataField] = await connection.query(
-            `SELECT productos.id, productos.*, categorias.nombre as categoria_nombre
+    let totalEncontrado = 0;
+    let dataEncontrado = 0;
+    if (search.trim().length < 1) {
+        const [total, data] = await runQuery(async function (connection) {
+            const [countRes, countField] = await connection.query("SELECT COUNT(id) as total FROM productos ");
+
+            const [dataRes, dataField] = await connection.query(
+                `SELECT productos.id, productos.*, categorias.nombre as categoria_nombre
             FROM productos 
             LEFT JOIN categorias ON productos.categoriaId = categorias.id
             LIMIT ?, ?`,
-            [offset, limit],
-        );
+                [offset, limit],
+            );
 
-        return [countRes[0].total, dataRes];
-    });
+            return [countRes[0].total, dataRes];
+        });
+
+        totalEncontrado = total;
+        dataEncontrado = data;
+    } else {
+        const [total, data] = await runQuery(async function (connection) {
+            const [countRes, countField] = await connection.query(
+                `SELECT COUNT(id) as total 
+        FROM productos 
+        WHERE 
+            marca like ? OR 
+            modelo like ?`,
+                [`%${search}%`, `%${search}%`],
+            );
+
+            const [dataRes, dataField] = await connection.query(
+                `SELECT productos.id, productos.*, categorias.nombre as categoria_nombre
+            FROM productos 
+            LEFT JOIN categorias ON productos.categoriaId = categorias.id
+            WHERE 
+                marca like ? OR 
+                modelo like ?
+            LIMIT ?, ?`,
+                [`%${search}%`, `%${search}%`, offset, limit],
+            );
+
+            return [countRes[0].total, dataRes];
+        });
+
+        totalEncontrado = total;
+        dataEncontrado = data;
+    }
 
     return {
-        data: (data as (Producto & { categoria_nombre: string })[]).map((p) => ({
+        data: (dataEncontrado as (Producto & { categoria_nombre: string })[]).map((p) => ({
             id: p.id,
             categoriaId: p.categoriaId,
             categoria: {
@@ -200,7 +237,7 @@ export async function getProductosWithCategorias(search = undefined, pagination:
             descripcion: p.descripcion,
             imagen: p.imagen,
         })),
-        total: total as number,
+        total: totalEncontrado as number,
     };
 }
 
