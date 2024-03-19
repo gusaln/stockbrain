@@ -7,13 +7,13 @@ import { parse } from "date-fns";
 import { redirect } from "next/navigation";
 
 const schema = z.object({
-    descripcion: z.string().trim().max(64),
     fecha: z.string().trim().max(64).datetime({ offset: true }),
+    descripcion: z.string().trim().max(128),
     items: z
         .array(
             z.object({
-                almacenId: z.number().int().positive(),
                 productoId: z.number().int().positive(),
+                almacenId: z.number().int().positive(),
                 cantidad: z.number().int().positive(),
             }),
         )
@@ -26,16 +26,15 @@ export async function crearOrdenConsumo(prevState: any, formData: FormData) {
     const itemCount = Number.parseInt((formData.get("__itemCount") as string) ?? "0", 10);
     for (let index = 0; index < itemCount; index++) {
         items.push({
-            almacenId: parseInt((formData.get(`items[${index}].almacenId`) as string) ?? ""),
             productoId: parseInt((formData.get(`items[${index}].productoId`) as string) ?? ""),
+            almacenId: parseInt((formData.get(`items[${index}].almacenId`) as string) ?? ""),
             cantidad: parseInt((formData.get(`items[${index}].cantidad`) as string) ?? "0"),
         });
     }
 
-    // console.log("formData", formData, "itemCount", itemCount, "items", items)
-
     const validatedFields = schema.safeParse({
         fecha: formData.get("fecha") + "T00:00:00-04",
+        descripcion: formData.get("descripcion"),
         items: items,
     });
 
@@ -57,9 +56,9 @@ export async function crearOrdenConsumo(prevState: any, formData: FormData) {
     );
 
     redirect(
-        "/ordenes/compra?" +
+        "/ordenes/consumo?" +
             new URLSearchParams({
-                "message[success]": "Orden de compra registrada con éxito",
+                "message[success]": "Orden de consumo registrada con éxito",
             }),
     );
 }

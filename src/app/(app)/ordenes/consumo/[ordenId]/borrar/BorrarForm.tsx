@@ -2,16 +2,16 @@
 
 import { FormError } from "@/components/forms/FormError";
 import { newInitialState, useStateToastNotifications } from "@/components/forms/useStateToastNotifications";
-import { OrdenCompra } from "@/lib/queries/shared";
+import { OrdenConsumo } from "@/lib/queries/shared";
 import { useFormState } from "react-dom";
 import { ToastContainer } from "react-toastify";
-import { bindOrdenCompraId } from "./page";
+import { bindOrdenConsumoId } from "./page";
 
 const initialState = newInitialState();
 
 interface Props {
-    orden: OrdenCompra;
-    onSubmit: ReturnType<typeof bindOrdenCompraId>;
+    orden: OrdenConsumo;
+    onSubmit: ReturnType<typeof bindOrdenConsumoId>;
 }
 
 export default function Form({ orden, onSubmit }: Props) {

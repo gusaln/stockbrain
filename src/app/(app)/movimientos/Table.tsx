@@ -99,7 +99,13 @@ export function Table() {
                                 <MovimientoAlmacen movimiento={movimiento} />{" "}
                             </td>
                             <td>
-                                {movimiento.producto.marca} {movimiento.producto.modelo}
+                                <a
+                                    href={`/productos/${movimiento.productoId}`}
+                                    className="link link-secondary"
+                                    target="_blank"
+                                >
+                                    {movimiento.producto.marca} {movimiento.producto.modelo}
+                                </a>
                             </td>
                             <td>
                                 <MovimientoOrigen movimiento={movimiento} />{" "}
