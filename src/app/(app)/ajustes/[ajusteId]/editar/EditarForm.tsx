@@ -10,11 +10,10 @@ import { ToastContainer, toast } from "react-toastify";
 import { bindAjusteId } from "./page";
 import { AjusteInventario, Almacen, Producto } from "@/lib/queries/shared";
 import { ProductoEstadoCheckbox } from "@/components/forms/ProductoEstadosCheckbox";
+import { formatForInput } from "@/lib/queries/utils";
+import { newInitialState, useStateToastNotifications } from "@/components/forms/useStateToastNotifications";
 
-const initialState = {
-    message: "",
-    errors: null,
-};
+const initialState = newInitialState();
 
 interface Props {
     ajuste: AjusteInventario;
@@ -26,7 +25,7 @@ interface Props {
 export default function Form({ ajuste, productos, almacenes, onSubmit }: Props) {
     const [state, formAction] = useFormState(onSubmit, initialState);
 
-    const [fecha, setFecha] = useState(ajuste.fecha);
+    const [fecha, setFecha] = useState(formatForInput(ajuste.fecha));
     const [almacenId, setAlmacenId] = useState(ajuste.almacenId);
     const [productoId, setProductoId] = useState(ajuste.productoId);
     const [estado, setEstado] = useState(ajuste.estado);
@@ -34,11 +33,7 @@ export default function Form({ ajuste, productos, almacenes, onSubmit }: Props) 
     const [cantidad, setCantidad] = useState(ajuste.cantidad);
     const [motivo, setMotivo] = useState(ajuste.motivo);
 
-    useEffect(() => {
-        if (state.message) {
-            toast.error(state.message);
-        }
-    }, [state]);
+    useStateToastNotifications(state);
 
     return (
         <form action={formAction} method="post">
@@ -83,49 +78,48 @@ export default function Form({ ajuste, productos, almacenes, onSubmit }: Props) 
                     optionValue={(p) => p.id}
                 />
 
-                <ProductoEstadoCheckbox name="estado"
-                    value={estado}
-                    onSelect={(estado) => setEstado(estado)}
-                />
+                <ProductoEstadoCheckbox name="estado" value={estado} onSelect={(estado) => setEstado(estado)} />
 
-                <div className="form-control">
-                    <label className="label cursor-pointer">
-                        <span className="label-text">Entrada</span>
-                        <input
-                            type="radio"
-                            name="tipo"
-                            className="radio checked:bg-blue-500"
-                            checked={tipo == 1}
-                            value={1}
-                            onChange={(ev) => setTipo(ev.target.value)}
-                        />
-                    </label>
-                </div>
-                <div className="form-control">
-                    <label className="label cursor-pointer">
-                        <span className="label-text">Salida</span>
-                        <input
-                            type="radio"
-                            name="tipo"
-                            className="radio checked:bg-red-500"
-                            checked={tipo == 2}
-                            value={2}
-                        />
-                    </label>
-                    <div className="label">
-                        {state.errors?.tipo ? (
-                            <span className="label-text-alt text-red-400">{state.errors?.tipo}</span>
-                        ) : (
-                            state.errors?.tipo
-                        )}
+                <div className="flex justify-center gap-6">
+                    <div className="form-control flex-grow">
+                        <label className="label cursor-pointer">
+                            <span className="label-text">Entrada</span>
+                            <input
+                                type="radio"
+                                name="tipo"
+                                className="radio checked:bg-blue-500"
+                                checked={tipo == 1}
+                                value={1}
+                                onChange={(ev) => setTipo(ev.target.value)}
+                            />
+                        </label>
                     </div>
+                    <div className="form-control flex-grow">
+                        <label className="label cursor-pointer">
+                            <span className="label-text">Salida</span>
+                            <input
+                                type="radio"
+                                name="tipo"
+                                className="radio checked:bg-red-500"
+                                checked={tipo == 2}
+                                value={2}
+                            />
+                        </label>
+                    </div>
+                </div>
+                <div className="label">
+                    {state.errors?.tipo ? (
+                        <span className="label-text-alt text-red-400">{state.errors?.tipo}</span>
+                    ) : (
+                        state.errors?.tipo
+                    )}
                 </div>
 
                 <Input
                     type="number"
                     name="cantidad"
                     label="Cantidad"
-                    onChange={(ev) => setCantidad((ev.target.value))}
+                    onChange={(ev) => setCantidad(ev.target.value)}
                     value={cantidad}
                     errors={state.errors?.cantidad}
                 />

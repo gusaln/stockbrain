@@ -178,7 +178,7 @@ export async function updateAjusteInventario(
 ) {
     const anterior = (await findAjusteInventario(id)) as AjusteInventario;
     await runQuery(async function (connection) {
-        const fechaSql = formatForSql(parseDateFromInput(modificado.fecha));
+        const fechaSql = formatForSql(modificado.fecha);
         const [dataRes, dataField] = await connection.query(
             `UPDATE ajustesInventario 
             SET 

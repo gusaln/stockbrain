@@ -28,21 +28,23 @@ export function ProductoEstadoCheckbox(props: ProductoEstadoCheckboxProps) {
 
     return (
         <>
-            {estados.map((e) => (
-                <div key={e.value} className="form-control">
-                    <label className="label cursor-pointer">
-                        <span className="label-text">{e.text}</span>
-                        <input
-                            type="radio"
-{...rest}
-                            className="radio checked:bg-primary"
-                            checked={props.value == null ? undefined : props.value == e.value}
-                            value={e.value}
-                            onSelect={() => onSelected?.(e.value)}
-                        />
-                    </label>
-                </div>
-            ))}
+            <div className="flex gap-6">
+                {estados.map((e) => (
+                    <div key={e.value} className="form-control flex-grow">
+                        <label className="label cursor-pointer">
+                            <span className="label-text">{e.text}</span>
+                            <input
+                                type="radio"
+                                {...rest}
+                                className="radio checked:bg-primary"
+                                checked={props.value == null ? undefined : props.value == e.value}
+                                value={e.value}
+                                onSelect={() => onSelected?.(e.value)}
+                            />
+                        </label>
+                    </div>
+                ))}
+            </div>
             <div className="form-control">
                 <div className="label">
                     {error ? <span className="label-text-alt text-red-400">{error}</span> : error}
