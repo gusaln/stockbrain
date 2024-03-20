@@ -1,5 +1,5 @@
 import { ResultSetHeader } from "mysql2";
-import { calcularStocksTodosQuery } from ".";
+import { calcularStocksDeUnoQuery, calcularStocksTodosQuery } from ".";
 import { runQuery } from "../db";
 import { Pagination } from "./pagination";
 import { MOVIMIENTO_INVENTARIO_TIPO, OrdenCompra, OrdenCompraItem, PRODUCTO_ESTADO } from "./shared";
@@ -429,27 +429,10 @@ export async function updateOrdenCompraItem(
             ],
         );
 
-        // await calcularStocksTodosQuery(connection);
-
-        await connection.query(
-            `INSERT INTO productoStocks (almacenId, productoId, estado, cantidad)
-            VALUES (?, ?, ?, -1 * ?)
-            ON DUPLICATE KEY UPDATE cantidad = cantidad - ?`,
-            [anterior.almacenId, anterior.productoId, PRODUCTO_ESTADO.BUENO, anterior.cantidad, anterior.cantidad],
-        );
-
-        await connection.query(
-            `INSERT INTO productoStocks (almacenId, productoId, estado, cantidad)
-            VALUES (?, ?, ?, ?)
-            ON DUPLICATE KEY UPDATE cantidad = cantidad + ?`,
-            [
-                modificado.almacenId,
-                modificado.productoId,
-                PRODUCTO_ESTADO.BUENO,
-                modificado.cantidad,
-                modificado.cantidad,
-            ],
-        );
+        await calcularStocksDeUnoQuery(connection, anterior.productoId);
+        if (anterior.productoId != modificado.productoId) {
+            await calcularStocksDeUnoQuery(connection, modificado.productoId);
+        }
     });
 
     return anterior.ordenId;

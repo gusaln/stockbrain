@@ -120,7 +120,7 @@ export function Table() {
 
             <tfoot>
                 <tr>
-                    <td colSpan={3}>
+                    <td colSpan={8}>
                         <PaginationSteps page={page} total={data.total} limit={limit} onPageChange={setPage} />
                     </td>
                 </tr>

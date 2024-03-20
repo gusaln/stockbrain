@@ -4,7 +4,7 @@ import { Table } from "./Table";
 export default function Page() {
     return (
         <ResponsiveLayout
-            title="Movimientos del Inventario"
+            title="Transferencias"
             acciones={() => {
                 return <LinkAction href="/transferencias/crear">Nuevo</LinkAction>;
             }}

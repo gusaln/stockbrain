@@ -56,32 +56,32 @@ export function Table() {
             </thead>
 
             <tbody>
-                {data.data?.map((movimiento) => {
+                {data.data?.map((t) => {
                     return (
-                        <tr key={movimiento.id}>
-                            <td>{movimiento.operador.nombre}</td>
-                            <td>{formatDatetime(movimiento.fecha)}</td>
+                        <tr key={t.id}>
+                            <td>{t.operador.nombre}</td>
+                            <td>{formatDatetime(t.fecha)}</td>
                             <td>
-                                <MovimientoAlmacen movimiento={movimiento} />{" "}
+                                <MovimientoAlmacen movimiento={t} />{" "}
                             </td>
                             <td>
                                 <a
-                                    href={`/productos/${movimiento.productoId}`}
+                                    href={`/productos/${t.productoId}`}
                                     className="link link-secondary"
                                     target="_blank"
                                 >
-                                    {movimiento.producto.marca} {movimiento.producto.modelo}
+                                    {t.producto.marca} {t.producto.modelo}
                                 </a>
                             </td>
                             <td>
-                                <MovimientoOrigen movimiento={movimiento} />{" "}
+                                <MovimientoOrigen movimiento={t} />{" "}
                             </td>
-                            <td>{movimiento.cantidad}</td>
+                            <td>{t.cantidad}</td>
                             <th>
-                                <a href={`/transferencias/${movimiento.id}/editar`} className="btn btn-ghost btn-sm">
+                                <a href={`/transferencias/${t.id}/editar`} className="btn btn-ghost btn-sm">
                                     editar
                                 </a>
-                                <a href={`/transferencias/${movimiento.id}/borrar`} className="btn btn-ghost btn-sm">
+                                <a href={`/transferencias/${t.id}/borrar`} className="btn btn-ghost btn-sm">
                                     borrar
                                 </a>
                             </th>

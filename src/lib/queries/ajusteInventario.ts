@@ -10,7 +10,7 @@ import {
     ProductoEstado,
 } from "./shared";
 import { formatForSql, parseDateFromInput } from "./utils";
-import { calcularStocksTodosQuery } from ".";
+import { calcularStocksDeUnoQuery, calcularStocksTodosQuery } from ".";
 
 export async function createAjusteInventario(
     operadorId: number,
@@ -227,25 +227,16 @@ export async function updateAjusteInventario(
             ],
         );
 
-        await connection.query(
-            `INSERT INTO productoStocks (almacenId, productoId, estado, cantidad) 
-            VALUES (?, ?, ?, -1 * ?) 
-            ON DUPLICATE KEY UPDATE cantidad = cantidad - ?`,
-            [anterior.almacenId, anterior.productoId, anterior.estado, anterior.cantidad, anterior.cantidad],
-        );
-
-        await connection.query(
-            `INSERT INTO productoStocks (almacenId, productoId, estado, cantidad) 
-            VALUES (?, ?, ?, ?) 
-            ON DUPLICATE KEY UPDATE cantidad = cantidad + ?`,
-            [modificado.almacenId, modificado.productoId, modificado.estado, modificado.cantidad, modificado.cantidad],
-        );
+        await calcularStocksDeUnoQuery(connection, anterior.productoId);
+        if (anterior.productoId != modificado.productoId) {
+            await calcularStocksDeUnoQuery(connection, modificado.productoId);
+        }
     });
 }
 
 export async function deleteAjuste(id: number) {
     await runQuery(async function (connection) {
-        await connection.query("DELETE FROM ajustes WHERE id = ?", [id]);
+        await connection.query("DELETE FROM ajustesInventario WHERE id = ?", [id]);
 
         await calcularStocksTodosQuery(connection);
     });

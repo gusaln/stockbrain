@@ -46,6 +46,7 @@ export async function createTransferencia(
                     ?,
                     ?,
                     ?,
+                    ?,
                     ?
                 )`,
             [
@@ -76,7 +77,6 @@ export async function createTransferencia(
         );
     });
 }
-
 
 export async function findTransferencia(id: number) {
     const [transferencia, dataField] = await runQuery(async function (connection) {
@@ -124,56 +124,60 @@ export async function updateTransferencia(
                 id,
             ],
         );
+        await calcularStocksDeUnoQuery(connection, anterior.productoId);
+        if (anterior.productoId != modificado.productoId) {
+            await calcularStocksDeUnoQuery(connection, modificado.productoId);
+        }
 
-        await connection.query(
-            `INSERT INTO productoStocks (almacenId, productoId, estado, cantidad) 
-            VALUES (?, ?, ?, ?) 
-            ON DUPLICATE KEY UPDATE cantidad = cantidad + ?`,
-            [
-                anterior.almacenOrigenId,
-                anterior.productoId,
-                anterior.estadoOrigen,
-                anterior.cantidad,
-                anterior.cantidad,
-            ],
-        );
-        await connection.query(
-            `INSERT INTO productoStocks (almacenId, productoId, estado, cantidad) 
-            VALUES (?, ?, ?, ?) 
-            ON DUPLICATE KEY UPDATE cantidad = cantidad + ?`,
-            [
-                anterior.almacenDestinoId,
-                anterior.productoId,
-                anterior.estadoDestino,
-                -anterior.cantidad,
-                -anterior.cantidad,
-            ],
-        );
+        // await connection.query(
+        //     `INSERT INTO productoStocks (almacenId, productoId, estado, cantidad)
+        //     VALUES (?, ?, ?, ?)
+        //     ON DUPLICATE KEY UPDATE cantidad = cantidad + ?`,
+        //     [
+        //         anterior.almacenOrigenId,
+        //         anterior.productoId,
+        //         anterior.estadoOrigen,
+        //         anterior.cantidad,
+        //         anterior.cantidad,
+        //     ],
+        // );
+        // await connection.query(
+        //     `INSERT INTO productoStocks (almacenId, productoId, estado, cantidad)
+        //     VALUES (?, ?, ?, ?)
+        //     ON DUPLICATE KEY UPDATE cantidad = cantidad + ?`,
+        //     [
+        //         anterior.almacenDestinoId,
+        //         anterior.productoId,
+        //         anterior.estadoDestino,
+        //         -anterior.cantidad,
+        //         -anterior.cantidad,
+        //     ],
+        // );
 
-        await connection.query(
-            `INSERT INTO productoStocks (almacenId, productoId, estado, cantidad) 
-            VALUES (?, ?, ?, ?) 
-            ON DUPLICATE KEY UPDATE cantidad = cantidad + ?`,
-            [
-                modificado.almacenOrigenId,
-                modificado.productoId,
-                modificado.estadoOrigen,
-                -modificado.cantidad,
-                -modificado.cantidad,
-            ],
-        );
-        await connection.query(
-            `INSERT INTO productoStocks (almacenId, productoId, estado, cantidad) 
-            VALUES (?, ?, ?, ?) 
-            ON DUPLICATE KEY UPDATE cantidad = cantidad + ?`,
-            [
-                modificado.almacenDestinoId,
-                modificado.productoId,
-                modificado.estadoDestino,
-                modificado.cantidad,
-                modificado.cantidad,
-            ],
-        );
+        // await connection.query(
+        //     `INSERT INTO productoStocks (almacenId, productoId, estado, cantidad)
+        //     VALUES (?, ?, ?, ?)
+        //     ON DUPLICATE KEY UPDATE cantidad = cantidad + ?`,
+        //     [
+        //         modificado.almacenOrigenId,
+        //         modificado.productoId,
+        //         modificado.estadoOrigen,
+        //         -modificado.cantidad,
+        //         -modificado.cantidad,
+        //     ],
+        // );
+        // await connection.query(
+        //     `INSERT INTO productoStocks (almacenId, productoId, estado, cantidad)
+        //     VALUES (?, ?, ?, ?)
+        //     ON DUPLICATE KEY UPDATE cantidad = cantidad + ?`,
+        //     [
+        //         modificado.almacenDestinoId,
+        //         modificado.productoId,
+        //         modificado.estadoDestino,
+        //         modificado.cantidad,
+        //         modificado.cantidad,
+        //     ],
+        // );
     });
 }
 
@@ -196,7 +200,7 @@ export async function getTransferenciasWithRelations(search = undefined, paginat
 
         const [dataRes, dataField] = await connection.query(
             `SELECT movimientosInventario.*,
-            usuarios.nombre as operador_nombre,
+                usuarios.nombre as operador_nombre,
                 aOrigen.nombre as almacen_origen_nombre,
                 aDestino.nombre as almacen_destino_nombre,
                 productos.marca as producto_marca,
@@ -206,8 +210,8 @@ export async function getTransferenciasWithRelations(search = undefined, paginat
             JOIN almacenes AS aOrigen ON movimientosInventario.almacenOrigenId = aOrigen.id
             JOIN almacenes AS aDestino ON movimientosInventario.almacenDestinoId = aDestino.id
             JOIN productos ON movimientosInventario.productoId = productos.id
-            ORDER BY movimientosInventario.fecha DESC, movimientosInventario.id DESC
             WHERE tipo = ?
+            ORDER BY movimientosInventario.fecha DESC, movimientosInventario.id DESC
             LIMIT ?, ? `,
             [MOVIMIENTO_INVENTARIO_TIPO.TRANSFERENCIA, offset, limit],
         );

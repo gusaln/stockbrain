@@ -4,34 +4,35 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import BorrarForm from "./BorrarForm";
 import { borrarAjuste } from "./action";
+import { findAjusteInventario } from "@/lib/queries";
 
 export const metadata: Metadata = {
     title: "Borrar Transferencia",
 };
 
-export function bindBorrarTransferencia(transferenciaId: number) {
-    return borrarAjuste.bind(null, transferenciaId);
+export function bindBorrarTransferencia(ajusteId: number) {
+    return borrarAjuste.bind(null, ajusteId);
 }
 
-export default async function Page({ params }: { params: { transferenciaId: number } }) {
-    const transferencia = await findTransferencia(params.transferenciaId);
+export default async function Page({ params }: { params: { ajusteId: number } }) {
+    const ajuste = await findAjusteInventario(params.ajusteId);
 
-    if (!transferencia) {
+    if (!ajuste) {
         return notFound();
     }
 
-    const borrarTransferenciaWithId = bindBorrarTransferencia(transferencia.id);
+    const borrarAjusteWithId = bindBorrarTransferencia(ajuste.id);
 
     return (
         <ResponsiveLayout
-            title="Borrar Transferencia"
+            title="Borrar ajuste"
             acciones={() => {
-                return <LinkAction href="/transferencias">Volver</LinkAction>;
+                return <LinkAction href="/ajustes">Volver</LinkAction>;
             }}
         >
             <section className="w-full justify-center flex">
                 <div className="card w-1/2 shadow-lg">
-                    <BorrarForm transferencia={transferencia} onSubmit={borrarTransferenciaWithId} />
+                    <BorrarForm ajuste={ajuste} onSubmit={borrarAjusteWithId} />
                 </div>
             </section>
         </ResponsiveLayout>

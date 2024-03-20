@@ -15,7 +15,7 @@ export default async function Page() {
             }}
         >
             <section className="w-full justify-center flex">
-                <div className="card w-fit shadow-lg">
+                <div className="card w-full shadow-lg">
                     <CrearOrdenConsumoForm almacenes={almacenes} productos={productos} onSubmit={crearOrdenConsumo} />
                 </div>
             </section>

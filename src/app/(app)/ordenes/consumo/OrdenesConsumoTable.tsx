@@ -1,6 +1,7 @@
 "use client";
 import { Loader } from "@/components/Loader";
 import { PaginationSteps, usePagination } from "@/components/pagination";
+import { formatDatetime } from "@/lib/format";
 import { OrdenConsumo } from "@/lib/queries";
 import { PaginatedResponse } from "@/utils";
 import { ExclamationCircleIcon } from "@heroicons/react/24/solid";
@@ -48,14 +49,15 @@ export function OrdenesConsumoTable() {
             </thead>
 
             <tbody>
-                {data.data?.map((p) => {
+                {data.data?.map((orden) => {
                     return (
-                        <tr key={p.id}>
-                            <td>{p.descripcion}</td>
-                            <td>{p.fecha}</td>
-                            <td>{p.operador.nombre}</td>
+                        <tr key={orden.id}>
+                            <td>{orden.descripcion}</td>
+                            <td>{formatDatetime( orden.fecha)}</td>
+                            <td>{orden.operador.nombre}</td>
                             <th>
-                                <button className="btn btn-ghost btn-sm">editar</button>
+                                <a href={`/ordenes/consumo/${orden.id}`} className="btn btn-ghost btn-sm">detalles</a>
+                                <a href={`/ordenes/consumo/${orden.id}/editar`} className="btn btn-ghost btn-sm">editar</a>
                             </th>
                         </tr>
                     );

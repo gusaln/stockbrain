@@ -272,6 +272,27 @@ export async function updateProducto(id: number, producto: Omit<Producto, "id">)
     return data as Producto | null;
 }
 
+export async function getProductosStocks() {
+    const [data, dataField] = (await runQuery(async function (connection) {
+        const [dataRes, dataField] = await connection.query(
+            `SELECT 
+                estado, 
+                SUM(cantidad) as cantidad
+            FROM productoStocks 
+            GROUP BY estado`,
+            [],
+        );
+
+        return [dataRes as ProductoStock[], dataField];
+    })) as [ProductoStock[], unknown];
+
+    return {
+        [PRODUCTO_ESTADO.BUENO]: data.find((s) => s.estado == PRODUCTO_ESTADO.BUENO)?.cantidad ?? 0,
+        [PRODUCTO_ESTADO.REVISION]: data.find((s) => s.estado == PRODUCTO_ESTADO.REVISION)?.cantidad ?? 0,
+        [PRODUCTO_ESTADO.DEFECTUOSO]: data.find((s) => s.estado == PRODUCTO_ESTADO.DEFECTUOSO)?.cantidad ?? 0,
+    };
+}
+
 export async function getProductoStocks(productoId: number) {
     const [data, dataField] = (await runQuery(async function (connection) {
         const [dataRes, dataField] = await connection.query(

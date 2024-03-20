@@ -2,7 +2,7 @@
 
 import { FormError } from "@/components/forms/FormError";
 import { newInitialState, useStateToastNotifications } from "@/components/forms/useStateToastNotifications";
-import { Transferencia } from "@/lib/queries/shared";
+import { AjusteInventario, Transferencia } from "@/lib/queries/shared";
 import { useFormState } from "react-dom";
 import { ToastContainer } from "react-toastify";
 import { bindBorrarTransferencia } from "./page";
@@ -10,11 +10,11 @@ import { bindBorrarTransferencia } from "./page";
 const initialState = newInitialState();
 
 interface Props {
-    transferencia: Transferencia;
+    ajuste: AjusteInventario;
     onSubmit: ReturnType<typeof bindBorrarTransferencia>;
 }
 
-export default function Form({ transferencia, onSubmit }: Props) {
+export default function Form({ ajuste: ajuste, onSubmit }: Props) {
     const [state, formAction] = useFormState(onSubmit, initialState);
 
     useStateToastNotifications(state);
@@ -25,7 +25,7 @@ export default function Form({ transferencia, onSubmit }: Props) {
 
             <div className="card-body">
                 <div className="card-title">
-                    ¿Está seguro que desea borrar la transferencia #<em>{transferencia.id}</em>?
+                    ¿Está seguro que desea borrar el ajuste <em>#{ajuste.id}</em>?
                 </div>
 
                 <FormError message={state?.messages?.error} />

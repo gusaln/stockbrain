@@ -73,10 +73,10 @@ export default function Form(props: Props) {
                 <ul>
                     {items.map((item, index) => {
                         return (
-                            <li className="grid grid-cols-4 gap-2" key={item._id}>
+                            <li className="grid grid-cols-3 gap-2" key={item._id}>
                                 <Select
                                     name={`items[${index}].almacenId`}
-                                    label="almacen"
+                                    label="Almacén"
                                     selected={item.almacenId}
                                     onSelectChanged={(id) => handleItemChange(item, { almacenId: id })}
                                     options={props.almacenes}

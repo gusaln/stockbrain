@@ -38,7 +38,7 @@ export async function editarOrdenConsumo(ordenId: number, prevState: any, formDa
 
     revalidatePath(`/ordenes/consumo`);
     redirect(
-        `/ordenes/consumo/${ordenId}/editar?` +
+        `/ordenes/consumo/${ordenId}?` +
             new URLSearchParams({
                 "message[success]": "Orden de consumo modificada con éxito",
             }),

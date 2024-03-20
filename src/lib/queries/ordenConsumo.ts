@@ -310,8 +310,7 @@ export async function createOrdenConsumoItem(
                     estadoDestino,
                     tipo,
                     ordenConsumoId,
-                    cantidad,
-                    fueEditada
+                    cantidad
                 ) 
             VALUES 
                 (
@@ -322,8 +321,7 @@ export async function createOrdenConsumoItem(
                     ?,
                     ?,
                     ?,
-                    ?,
-                    1
+                    ?       
                 )`,
             [
                 fechaSql,
@@ -333,7 +331,7 @@ export async function createOrdenConsumoItem(
                 PRODUCTO_ESTADO.BUENO,
                 MOVIMIENTO_INVENTARIO_TIPO.SALIDA,
                 ordenId,
-                nuevo.cantidad,
+                -nuevo.cantidad,
             ],
         );
 
@@ -341,7 +339,7 @@ export async function createOrdenConsumoItem(
             `INSERT INTO productoStocks (almacenId, productoId, estado, cantidad) 
             VALUES (?, ?, ?, ?) 
             ON DUPLICATE KEY UPDATE cantidad = cantidad + ?`,
-            [nuevo.almacenId, nuevo.productoId, PRODUCTO_ESTADO.BUENO, nuevo.cantidad, nuevo.cantidad],
+            [nuevo.almacenId, nuevo.productoId, PRODUCTO_ESTADO.BUENO, -nuevo.cantidad, -nuevo.cantidad],
         );
     });
 }
@@ -384,34 +382,34 @@ export async function updateOrdenConsumoItem(
                 modificado.almacenId,
                 modificado.productoId,
                 PRODUCTO_ESTADO.BUENO,
-                modificado.cantidad,
+                -modificado.cantidad,
                 anterior.ordenId,
                 anterior.productoId,
                 PRODUCTO_ESTADO.BUENO,
             ],
         );
 
-        // await calcularStocksTodosQuery(connection);
+        await calcularStocksTodosQuery(connection);
 
-        await connection.query(
-            `INSERT INTO productoStocks (almacenId, productoId, estado, cantidad)
-            VALUES (?, ?, ?, -1 * ?)
-            ON DUPLICATE KEY UPDATE cantidad = cantidad - ?`,
-            [anterior.almacenId, anterior.productoId, PRODUCTO_ESTADO.BUENO, anterior.cantidad, anterior.cantidad],
-        );
+        // await connection.query(
+        //     `INSERT INTO productoStocks (almacenId, productoId, estado, cantidad)
+        //     VALUES (?, ?, ?, -1 * ?)
+        //     ON DUPLICATE KEY UPDATE cantidad = cantidad - ?`,
+        //     [anterior.almacenId, anterior.productoId, PRODUCTO_ESTADO.BUENO, -anterior.cantidad, anterior.cantidad],
+        // );
 
-        await connection.query(
-            `INSERT INTO productoStocks (almacenId, productoId, estado, cantidad)
-            VALUES (?, ?, ?, ?)
-            ON DUPLICATE KEY UPDATE cantidad = cantidad + ?`,
-            [
-                modificado.almacenId,
-                modificado.productoId,
-                PRODUCTO_ESTADO.BUENO,
-                modificado.cantidad,
-                modificado.cantidad,
-            ],
-        );
+        // await connection.query(
+        //     `INSERT INTO productoStocks (almacenId, productoId, estado, cantidad)
+        //     VALUES (?, ?, ?, ?)
+        //     ON DUPLICATE KEY UPDATE cantidad = cantidad + ?`,
+        //     [
+        //         modificado.almacenId,
+        //         modificado.productoId,
+        //         PRODUCTO_ESTADO.BUENO,
+        //         modificado.cantidad,
+        //         modificado.cantidad,
+        //     ],
+        // );
     });
 
     return anterior.ordenId;

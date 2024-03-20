@@ -39,7 +39,7 @@ export async function editarOrdenCompra(ordenId: number, prevState: any, formDat
 
     revalidatePath(`/ordenes/compra`);
     redirect(
-        `/ordenes/compra/${ordenId}/editar?` +
+        `/ordenes/compra/${ordenId}?` +
             new URLSearchParams({
                 "message[success]": "Orden de compra modificada con éxito",
             }),

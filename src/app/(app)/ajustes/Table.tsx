@@ -71,6 +71,9 @@ export function Table() {
                                 <a href={`/ajustes/${ajuste.id}/editar`} className="btn btn-ghost btn-sm">
                                     editar
                                 </a>
+                                <a href={`/ajustes/${ajuste.id}/borrar`} className="btn btn-ghost btn-sm">
+                                    borrar
+                                </a>
                             </th>
                         </tr>
                     );
