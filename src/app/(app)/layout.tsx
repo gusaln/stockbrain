@@ -31,6 +31,10 @@ const rutas = [
         href: "/ajustes",
     },
     {
+        text: "Transferencias",
+        href: "/transferencias",
+    },
+    {
         text: "Movimientos",
         href: "/movimientos",
     },

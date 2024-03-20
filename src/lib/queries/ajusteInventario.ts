@@ -10,6 +10,7 @@ import {
     ProductoEstado,
 } from "./shared";
 import { formatForSql, parseDateFromInput } from "./utils";
+import { calcularStocksTodosQuery } from ".";
 
 export async function createAjusteInventario(
     operadorId: number,
@@ -239,5 +240,13 @@ export async function updateAjusteInventario(
             ON DUPLICATE KEY UPDATE cantidad = cantidad + ?`,
             [modificado.almacenId, modificado.productoId, modificado.estado, modificado.cantidad, modificado.cantidad],
         );
+    });
+}
+
+export async function deleteAjuste(id: number) {
+    await runQuery(async function (connection) {
+        await connection.query("DELETE FROM ajustes WHERE id = ?", [id]);
+
+        await calcularStocksTodosQuery(connection);
     });
 }

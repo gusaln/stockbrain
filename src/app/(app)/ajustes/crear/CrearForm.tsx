@@ -8,12 +8,10 @@ import { Almacen, Producto } from "@/lib/queries/shared";
 import { useState } from "react";
 import { useFormState } from "react-dom";
 import { crearAjuste } from "./action";
-// import { AJUSTE_INVENTARIO_TIPO } from "@/lib/queries";
+import { newInitialState, useStateToastNotifications } from "@/components/forms/useStateToastNotifications";
+import { ToastContainer } from "react-toastify";
 
-const initialState = {
-    message: "",
-    errors: null,
-};
+const initialState = newInitialState();
 
 interface Props {
     almacenes: Almacen[];
@@ -27,18 +25,21 @@ export default function Form(props: Props) {
     const [almacenId, setAlmacenId] = useState(props.almacenes.length == 1 ? props.almacenes[0].id : null);
     const [productoId, setProductoId] = useState(null as number | null);
 
+    useStateToastNotifications(state)
+
     return (
         <form action={formAction} method="post">
+            <ToastContainer/>
             <div className="card-body w-full">
                 <div className="card-title">Indique los datos del nuevo ajuste de inventario</div>
 
-                <FormError message={state.message} />
+                <FormError message={state?.messages?.error} />
 
                 <Input name="fecha" label="Fecha (formato: 2024-12-31)" errors={state.errors?.fecha} />
 
                 <Select
                     name="almacenId"
-                    label="almacen"
+                    label="Almacén"
                     selected={almacenId}
                     onSelectChanged={(pId) => setAlmacenId(pId)}
                     errors={state.errors?.almacenId}

@@ -160,6 +160,12 @@ export type MovimientoInventario = {
       }
 );
 
+export type Transferencia = MovimientoInventario & {
+    tipo: typeof MOVIMIENTO_INVENTARIO_TIPO.TRANSFERENCIA;
+    almacenDestinoId: number;
+    estadoDestino: ProductoEstado;
+};
+
 export type MovimientoInventarioWithRelations = {
     id: number;
     fecha: string;

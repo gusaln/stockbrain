@@ -1,31 +1,31 @@
 "use server";
 
 import { authenticateOrFail } from "@/lib/auth";
-import { createAjusteInventario } from "@/lib/queries";
-import { AjusteInventarioTipo, ProductoEstado } from "@/lib/queries/shared";
+import { ProductoEstado } from "@/lib/queries/shared";
+import { createTransferencia } from "@/lib/queries/transferencias";
 import { parseDateFromInput } from "@/lib/queries/utils";
 import { z } from "@/validation";
 import { redirect } from "next/navigation";
 
 const schema = z.object({
     fecha: z.string().trim().max(64).datetime({ offset: true }),
-    almacenId: z.number().int().positive(),
+    almacenOrigenId: z.number().int().positive(),
+    almacenDestinoId: z.number().int().positive(),
     productoId: z.number().int().positive(),
-    estado: z.number().int().positive(),
-    tipo: z.number(),
+    estadoOrigen: z.number().int().positive(),
+    estadoDestino: z.number().int().positive(),
     cantidad: z.number(),
-    motivo: z.string().trim().max(256),
 });
 
-export async function crearAjuste(prevState: any, formData: FormData) {
+export async function crearTransferencia(prevState: any, formData: FormData) {
     const validatedFields = schema.safeParse({
         fecha: formData.get("fecha") + "T00:00:00-04",
-        almacenId: parseInt(formData.get("almacenId") as string),
+        almacenOrigenId: parseInt(formData.get("almacenOrigenId") as string),
+        almacenDestinoId: parseInt(formData.get("almacenDestinoId") as string),
         productoId: parseInt(formData.get("productoId") as string),
-        estado: parseInt(formData.get("estado") as string),
-        tipo: parseInt(formData.get("tipo") as string),
+        estadoOrigen: parseInt(formData.get("estadoOrigen") as string),
+        estadoDestino: parseInt(formData.get("estadoDestino") as string),
         cantidad: parseInt(formData.get("cantidad") as string),
-        motivo: formData.get("motivo"),
     });
 
     if (!validatedFields.success) {
@@ -39,21 +39,21 @@ export async function crearAjuste(prevState: any, formData: FormData) {
 
     const user = await authenticateOrFail();
 
-    const ajusteId = await createAjusteInventario(
+    const ajusteId = await createTransferencia(
         user.id,
         parseDateFromInput(formData.get("fecha") as string),
-        validatedFields.data.almacenId,
+        validatedFields.data.almacenOrigenId,
+        validatedFields.data.almacenDestinoId,
         validatedFields.data.productoId,
-        validatedFields.data.estado as ProductoEstado,
-        validatedFields.data.tipo as AjusteInventarioTipo,
+        validatedFields.data.estadoOrigen as ProductoEstado,
+        validatedFields.data.estadoDestino as ProductoEstado,
         validatedFields.data.cantidad,
-        validatedFields.data.motivo,
     );
 
     redirect(
-        "/ajustes?" +
+        "/transferencias?" +
             new URLSearchParams({
-                "message[success]": "Ajuste registrado con éxito",
+                "message[success]": "Transferencia creada con éxito",
             }),
     );
 }
